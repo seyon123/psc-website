@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-primary: #007bff;
+  --color-secondary: #6c757d;
+  --color-accent: #ffc107;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Dark mode, but only applied with a class */
+.dark {
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-primary: #1e90ff;
+  --color-secondary: #495057;
+  --color-accent: #ffcc00;
+}
+
+/* Easily add more themes */
+.blue-theme {
+  --color-background: #e3f2fd;
+  --color-foreground: #0d47a1;
+  --color-primary: #2196f3;
+  --color-secondary: #bbdefb;
+  --color-accent: #ff5722;
+}
+
+/* Helper class for transitions */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
