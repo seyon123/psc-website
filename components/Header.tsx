@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, PhoneIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getProductLines, getPartCategories } from "../lib/api";
 
 export default function Header() {
@@ -163,7 +163,7 @@ export default function Header() {
       {/* Breadcrumb Bar */}
       {pathname !== "/" && (
         <div className="bg-blue-700 p-1">
-          <div className="container mx-auto px-4 md:px-8">
+          <div className="container mx-auto px-4 md:px-8 flex justify-between items-center">
             <nav className="text-sm text-white">
               {generateBreadcrumbs().map((crumb, index) => (
                 <span key={index}>
@@ -174,6 +174,15 @@ export default function Header() {
                 </span>
               ))}
             </nav>
+
+            {/* Call to Action Button with Phone Icon */}
+            <a
+              href="tel:+18002469689"
+              className="bg-yellow-500 text-black py-2 px-4 rounded-lg text-sm font-bold hover:bg-yellow-600 focus:outline-none transition-colors whitespace-nowrap flex justify-center hidden sm:flex items-center"
+            >
+              <PhoneIcon className="h-5 w-5 mr-2" /> {/* Phone Icon */}
+              1-800-246-9689
+            </a>
           </div>
         </div>
       )}

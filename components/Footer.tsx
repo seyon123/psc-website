@@ -8,17 +8,18 @@ import { useState, useEffect } from "react";
 export default function Footer() {
     const [theme, setTheme] = useState("light");
 
+    // On page load, get saved theme and apply it
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme") || "light";
         setTheme(savedTheme);
-        document.documentElement.className = savedTheme;
+        document.documentElement.className = savedTheme; // Apply theme on the <html> element
     }, []);
 
     const toggleTheme = () => {
         const newTheme = theme === "light" ? "dark" : "light";
         setTheme(newTheme);
         localStorage.setItem("theme", newTheme);
-        document.documentElement.className = newTheme;
+        document.documentElement.className = newTheme; // Apply theme change to <html>
     };
 
     return (
@@ -41,21 +42,21 @@ export default function Footer() {
                     </Link>
                 </div>
 
-                <div className="flex space-x-6 text-sm mb-4 md:mb-0">
+                <div className="flex items-center space-x-6 text-sm mb-4 md:mb-0">
                     <Link href="/privacy-policy" className="hover:underline">
                         Privacy Policy
                     </Link>
                     <Link href="/sitemap" className="hover:underline">
                         Sitemap
                     </Link>
-                </div>
-                <button
-                    className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700"
-                    onClick={toggleTheme}
-                    aria-label="Toggle theme"
-                >
+                    <button
+                        className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700 cursor-pointer"
+                        onClick={toggleTheme}
+                        aria-label="Toggle theme">
                     {theme === "light" ? <MoonIcon className="h-6 w-6" /> : <SunIcon className="h-6 w-6" />}
                 </button>
+                </div>
+                
             </div>
         </footer>
     );
