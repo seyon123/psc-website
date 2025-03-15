@@ -15,7 +15,7 @@ export const fetchAPI = async (path: string) => {
 // Products API Functions
 export async function getProductLines() {
     try {
-        const response = await fetch(API_URL + "/product-lines?populate=image");
+        const response = await fetch(API_URL + "/product-lines?populate[image][populate]=*&populate[products][populate]=*");
 
         if (!response.ok) {
             throw new Error(`Failed to fetch product lines: ${response.statusText}`);
