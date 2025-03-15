@@ -15,7 +15,7 @@ export const fetchAPI = async (path: string) => {
 // Products API Functions
 export async function getProductLines() {
     try {
-        const response = await fetch(API_URL + "/product-lines?populate=products.image");
+        const response = await fetch(API_URL + "/product-lines?populate=image");
 
         if (!response.ok) {
             throw new Error(`Failed to fetch product lines: ${response.statusText}`);
@@ -34,7 +34,7 @@ export async function getProductLines() {
 export async function getProductLineBySlug(slug: string) {
     try {
         // Correct query syntax to populate `image` for the product line and `image` for products
-        const response = await fetch(API_URL + `/product-lines?filters[slug][$eq]=${slug}&populate[products][populate]=image`);
+        const response = await fetch(API_URL + `/product-lines?filters[slug][$eq]=${slug}&populate=image&populate=products.image`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch product line: ${response.statusText}`);
@@ -67,13 +67,30 @@ export async function getProductBySlug(slug: string) {
 }
 
 // Parts and Accessories API Functions
+export async function getPartCategories() {
+    try {
+        const response = await fetch(API_URL + `/part-categories?populate=image`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch part categories ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Fetched part categories:", data);
+        return data.data || [];
+    } catch (error) {
+        console.error("Error fetching part categories:", error);
+        return [];
+    }
+}
+
+
 export async function getPartCategoryBySlug(slug: string) {
     try {
-        const response = await fetch(API_URL + `/part-categories?filters[slug][$eq]=${slug}&populate=*`);
+        const response = await fetch(API_URL + `/part-categories?filters[slug][$eq]=${slug}&populate=image&populate=parts.image`);
         if (!response.ok) {
             throw new Error(`Failed to fetch part categories: ${response.statusText}`);
         }
         const data = await response.json();
+        console.log("Fetched part category:", data);
         return data.data[0]; // Return the first result, assuming slugs are unique
     } catch (error) {
         console.error("Error fetching part categories:", error);
@@ -97,20 +114,7 @@ export async function getPartBySlug(slug: string) {
 }
 
 
-export async function getPartCategories() {
-    try {
-        const response = await fetch(API_URL + `/part-categories?populate=*`);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch part categories ${response.statusText}`);
-        }
-        const data = await response.json();
-        console.log("Fetched part categories:", data);
-        return data.data || [];
-    } catch (error) {
-        console.error("Error fetching part categories:", error);
-        return [];
-    }
-}
+
 
 
 
