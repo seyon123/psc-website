@@ -1,4 +1,6 @@
 import { getPartCategoryBySlug, getPartCategories, processRichText } from "../../../lib/api";
+import { Part, PartCategory } from "@/types/parts";
+
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -7,18 +9,6 @@ import rehypeRaw from "rehype-raw";
 
 // Placeholder image URL
 const placeholderImage = "/placeholder-image.jpg";
-
-type PartCategory = {
-    slug: string;
-    name: string;
-    description?: any;
-    image?: {
-        url: string;
-        width: number;
-        height: number;
-    };
-    parts: any[];
-};
 
 export default async function PartsCategoryPage({ params }: { params: { categorySlug: string } }) {
     const category = await getPartCategoryBySlug(params.categorySlug);
@@ -49,18 +39,18 @@ export default async function PartsCategoryPage({ params }: { params: { category
 
             <h2 className="text-2xl font-semibold mb-4">Parts & Accessories</h2>
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {category.parts.map((part: any) => (
+                {category.parts.map((part: Part) => (
                     <li key={part.slug} className="border p-4 rounded-lg shadow hover:shadow-lg transition-shadow">
                         <Link href={`/parts-and-accessories/${params.categorySlug}/${part.slug}`}>
                             <div className="cursor-pointer">
                                 <Image
                                     src={part.image?.url || placeholderImage}
-                                    alt={part.Name}
-                                    width={part.Image?.width || 300}
-                                    height={part.Image?.height || 200}
+                                    alt={part.name}
+                                    width={part.image?.width || 300}
+                                    height={part.image?.height || 200}
                                     className="rounded mb-4"
                                 />
-                                <h3 className="text-xl font-semibold">{part.Name}</h3>
+                                <h3 className="text-xl font-semibold">{part.name}</h3>
                                 <div className="text-gray-600">{part.description ? (
                                     <ReactMarkdown
                                         rehypePlugins={[rehypeRaw]}>

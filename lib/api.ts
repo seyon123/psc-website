@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337/api";
+const API_URL = (process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337") + "/api";
 
 export const fetchAPI = async (path: string) => {
     try {
@@ -12,10 +12,10 @@ export const fetchAPI = async (path: string) => {
     }
 };
 
-
+// Products API Functions
 export async function getProductLines() {
     try {
-        const response = await fetch(API_URL + "/product-lines?populate=products");
+        const response = await fetch(API_URL + "/product-lines?populate=products.image");
 
         if (!response.ok) {
             throw new Error(`Failed to fetch product lines: ${response.statusText}`);
@@ -33,11 +33,15 @@ export async function getProductLines() {
 
 export async function getProductLineBySlug(slug: string) {
     try {
-        const response = await fetch(API_URL + `/product-lines?filters[slug][$eq]=${slug}&populate=products`);
+        // Correct query syntax to populate `image` for the product line and `image` for products
+        const response = await fetch(API_URL + `/product-lines?filters[slug][$eq]=${slug}&populate[products][populate]=image`);
+
         if (!response.ok) {
             throw new Error(`Failed to fetch product line: ${response.statusText}`);
         }
+
         const data = await response.json();
+        console.log("Fetched product line:", data);
         return data.data[0]; // Return the first result, assuming slugs are unique
     } catch (error) {
         console.error("Error fetching product line:", error);
@@ -46,9 +50,26 @@ export async function getProductLineBySlug(slug: string) {
 }
 
 
+
+export async function getProductBySlug(slug: string) {
+    try {
+        const response = await fetch(API_URL + `/products?filters[slug][$eq]=${slug}&populate=*`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch product: ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Fetched product:", data);
+        return data.data[0]; // Return the first result, assuming slugs are unique
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        return null;
+    }
+}
+
+// Parts and Accessories API Functions
 export async function getPartCategoryBySlug(slug: string) {
     try {
-        const response = await fetch(API_URL + `/part-categories?filters[slug][$eq]=${slug}&populate=parts`);
+        const response = await fetch(API_URL + `/part-categories?filters[slug][$eq]=${slug}&populate=*`);
         if (!response.ok) {
             throw new Error(`Failed to fetch part categories: ${response.statusText}`);
         }
@@ -60,10 +81,25 @@ export async function getPartCategoryBySlug(slug: string) {
     }
 }
 
+export async function getPartBySlug(slug: string) {
+    try {
+        const response = await fetch(API_URL + `/parts?filters[slug][$eq]=${slug}&populate=*`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch part: ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Fetched part:", data);
+        return data.data[0]; // Return the first result, assuming slugs are unique
+    } catch (error) {
+        console.error("Error fetching part:", error);
+        return null;
+    }
+}
+
 
 export async function getPartCategories() {
     try {
-        const response = await fetch(API_URL + `/part-categories?populate=parts`);
+        const response = await fetch(API_URL + `/part-categories?populate=*`);
         if (!response.ok) {
             throw new Error(`Failed to fetch part categories ${response.statusText}`);
         }

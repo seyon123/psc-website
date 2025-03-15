@@ -1,23 +1,11 @@
-import { getProductLines, processRichText } from "../../lib/api";
+import { getProductLines } from "../../lib/api";
+import { ProductLine } from "@/types/products";
 import Link from "next/link";
 import Image from "next/image";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 
 // Placeholder image URL
 const placeholderImage = "/placeholder-image.jpg";
 
-type ProductLine = {
-    slug: string;
-    name: string;
-    shortDescription?: string;
-    description?: any;
-    image?: {
-        url: string;
-        width: number;
-        height: number;
-    };
-};
 
 export default async function ProductLinesPage() {
     const productLines = await getProductLines();

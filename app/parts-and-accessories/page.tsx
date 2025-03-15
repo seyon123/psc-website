@@ -1,4 +1,6 @@
 import { getPartCategories, processRichText } from "../../lib/api";
+import { PartCategory } from "@/types/parts";
+
 import Link from "next/link";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
@@ -6,17 +8,6 @@ import rehypeRaw from "rehype-raw";
 
 
 const placeholderImage = "/placeholder-image.jpg";
-
-type PartCategory = {
-    slug: string;
-    name: string;
-    description?: any;
-    image?: {
-        url: string;
-        width: number;
-        height: number;
-    };
-};
 
 export default async function PartCategoriesPage() {
     const partCategories = await getPartCategories();

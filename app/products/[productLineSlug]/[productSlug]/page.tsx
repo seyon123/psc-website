@@ -1,10 +1,8 @@
-import { getProductLineBySlug, getProductLines, processRichText } from "../../../../lib/api";
-import Image from "next/image";
+import { getProductBySlug, getProductLines, processRichText } from "@/lib/api";
+import { Product, ProductLine } from "@/types/products";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-
-// Placeholder image URL
-const placeholderImage = "/placeholder-image.jpg";
+import GalleryPage from "@/components/GalleryPage";
 
 type ProductPageProps = {
     params: {
@@ -14,10 +12,7 @@ type ProductPageProps = {
 };
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    // Fetch the product line data based on productLineSlug
-    const productLine = await getProductLineBySlug(params.productLineSlug);
-    // Find the product based on the slug
-    const product = productLine?.products.find((prod: any) => prod.slug === params.productSlug);
+    const product = await getProductBySlug(params.productSlug);
 
     if (!product) {
         return <div>Product not found</div>;
@@ -25,61 +20,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
     return (
         <div className="container mx-auto py-8 px-4">
-            <h1 className="text-4xl font-bold mb-6">{product.name}</h1>
+            {/* Product Title and Product Line */}
+            <div className="mb-6">
+                {/* Product Name */}
+                <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
 
-            {/* Product Info Section with Image on the Left and Description on the Right */}
-            <div className="flex flex-col md:flex-row mb-8 gap-8">
-                {/* Product Image Section */}
-                <div className="w-full md:w-1/2 flex justify-center mb-4 md:mb-0">
-                    <div className="relative w-full h-96">
-                        <Image
-                            src={product.image?.url || placeholderImage}
-                            alt={product.name}
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-lg shadow-lg"
-                        />
-                    </div>
-                </div>
-
-                {/* Product Description Section */}
-                <div className="w-full md:w-1/2">
-                    <div className="text-gray-600 prose prose-lg max-w-none">
-                        {product.description ? (
-                            <ReactMarkdown
-                                rehypePlugins={[rehypeRaw]}>
-                                {processRichText(product.description)}
-                            </ReactMarkdown>
-                        ) : (
-                            <p>No description available.</p>
-                        )}
-                    </div>
-                </div>
+                {/* Product Line Name */}
+                <p className="text-lg text-gray-600">{product.product_line?.name}</p>
             </div>
 
-            {/* Product Images Gallery Section (Thumbnail Images) */}
-            <div className="flex gap-4 mb-8 overflow-x-auto">
-                {product.images?.map((img: any, index: number) => (
-                    <div key={index} className="relative w-32 h-32 flex-shrink-0">
-                        <Image
-                            src={img.url || placeholderImage}
-                            alt={product.name}
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-lg shadow-md cursor-pointer hover:scale-105 transition-all"
-                        />
-                    </div>
-                ))}
-            </div>
+            {/* Flexbox container to hold gallery and description */}
+            <div className="flex flex-col lg:flex-row items-start gap-6 p-4">
+                {/* Gallery (on larger screens, take up 1/2 of the width) */}
+                <div className="flex-shrink-0 w-full lg:w-1/2">
+                    <GalleryPage item={product} />
+                </div>
 
-            {/* More Information Section (Optional) */}
-            <div className="bg-gray-50 py-8 px-4 rounded-lg shadow-lg mt-8">
-                <h2 className="text-2xl font-semibold mb-4">Key Features</h2>
-                <ul className="list-disc pl-5 space-y-2">
-                    {product.features?.map((feature: string, index: number) => (
-                        <li key={index} className="text-gray-600">{feature}</li>
-                    ))}
-                </ul>
+                {/* Product Description */}
+                <div className="flex-1 text-gray-600 prose prose-lg max-w-none mt-8 lg:mt-0">
+                    {product.description ? (
+                        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                            {processRichText(product.description)}
+                        </ReactMarkdown>
+                    ) : (
+                        <p>No description available.</p>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -89,10 +55,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 export async function generateStaticParams() {
     const productLines = await getProductLines();
 
-    const paths = productLines.flatMap((line: any) =>
-        line.products.map((product: any) => ({
-            productLineSlug: line.slug, // Use 'productLineSlug' for the product line
-            productSlug: product.slug, // Use 'productSlug' for the product
+    const paths = productLines.flatMap((line: ProductLine) =>
+        line.products.map((product: Product) => ({
+            productLineSlug: line.slug,
+            productSlug: product.slug,
         }))
     );
 
