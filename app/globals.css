@@ -39,3 +39,14 @@ body {
 body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+
+/* Target iframe (YouTube video) */
+iframe {
+  pointer-events: none; /* Prevent any interaction with the video */
+}
+
+/* Ensure the overlay isn't interfering with other content */
+section {
+  position: relative;
+}

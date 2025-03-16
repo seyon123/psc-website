@@ -1,4 +1,4 @@
-import { getProductLines, processRichText } from "../../lib/api";
+import { getProductLines, processRichText } from "@/lib/api";
 import { ProductLine } from "@/types/products";
 import Link from "next/link";
 import Image from "next/image";
