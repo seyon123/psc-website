@@ -34,7 +34,7 @@ export default async function ProductLinePage({ params }: { params: { productLin
                     className="rounded mb-4"
                 />
             )}
-            <div className="mb-6 text-gray-600 prose prose-lg max-w-none">
+            <div className="my-6 text-gray-600 prose prose-lg max-w-none">
                 {productLine.description ? (
                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                         {processRichText(productLine.description)}
@@ -50,17 +50,19 @@ export default async function ProductLinePage({ params }: { params: { productLin
                 {productLine.products.map((product: Product) => (
                     <li key={product.slug} className="border p-4 rounded-lg shadow flex flex-col justify-between h-full">
                         <div>
-                            {product.image && product.image.length > 0 && product.image[0].url && (
-                                <Image
-                                    src={getImageUrl(product.image[0].url) || ""}
-                                    alt={product.name}
-                                    width={product.image[0].width || 300}
-                                    height={product.image[0].height || 300}
-                                    className="rounded mb-4"
-                                />
-                            )}
-                            <h3 className="text-xl font-semibold">{product.name}</h3>
-                            <div className="text-gray-600 prose prose-lg max-w-none">
+                            <div className="w-full flex items-center justify-center aspect-square overflow-hidden rounded bg-gray-100">
+                                {product.image && product.image.length > 0 && product.image[0].url && (
+                                    <Image
+                                        src={getImageUrl(product.image[0].url) || ""}
+                                        alt={product.name}
+                                        width={product.image[0].width || 300}
+                                        height={product.image[0].height || 300}
+                                        className="object-cover object-center"
+                                    />
+                                )}
+                            </div>
+                            <h3 className="text-xl mt-2 font-semibold">{product.name}</h3>
+                            <div className="text-gray-600 mt-2 prose prose-lg max-w-none">
                                 {product.description ? (
                                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                                         {processRichText(product.description)}

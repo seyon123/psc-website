@@ -22,16 +22,18 @@ export default async function ProductLinesPage() {
                 {productLines.map((line: ProductLine) => (
                     <li key={line.slug} className="border p-4 rounded-lg shadow flex flex-col justify-between h-full">
                         <div >
-                            {/* Check if line.Image exists, if not use placeholder */}
-                            <Image
-                                src={getImageUrl(line.image?.url)}
-                                alt={line.name}
-                                width={line.image?.width || 300}
-                                height={line.image?.height || 200}
-                                className="rounded mb-4"
-                            />
-                            <h3 className="text-xl font-semibold">{line.name}</h3>
-                            <div className="text-gray-600 prose prose-lg max-w-none">
+                            <div className="w-full flex items-center justify-center aspect-square overflow-hidden rounded bg-gray-100">
+                                <Image
+                                    src={getImageUrl(line.image?.url)}
+                                    alt={line.name}
+                                    width={line.image?.width || 300}
+                                    height={line.image?.height || 200}
+                                    className="object-cover object-center"
+                                />
+                            </div>
+                            <h3 className="text-xl mt-2  font-semibold">{line.name}</h3>
+
+                            <div className=" mt-2 text-gray-600 prose prose-lg max-w-none">
                                 {line.description ? (
                                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                                         {processRichText(line.description)}
