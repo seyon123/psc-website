@@ -64,7 +64,7 @@ export default function Hero() {
         {/* CTA Button */}
         <Link
           href="/contact"
-          className="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg"
+          className="mt-8 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg"
         >
           Contact Us
         </Link>
