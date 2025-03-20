@@ -1,26 +1,31 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import "../app/globals.css"; // Ensure you import the global styles
+import './globals.css';
+import type { Metadata } from 'next';
+import { ThemeProvider } from '@/app/providers/ThemeProvider';
+import Header from '@/components/Header'; // Import your Header component
+import Footer from '@/components/Footer'; // Import your Footer component
 
-export const metadata = {
-  title: "Pressure Systems Company Inc. - Pressure Washing Machines",
-  description: "Explore powerful and reliable pressure washing machines for commercial and industrial cleaning.",
+export const metadata: Metadata = {
+  title: 'Pressure Systems Company',
+  description: 'Professional pressure washing equipment and solutions for industrial and commercial applications',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" href="/logo.png" type="image/png" />
-      </head>
-      <body className="bg-gray-50">
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-        </div>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header /> {/* Include your site's header */}
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

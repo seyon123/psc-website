@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 // Placeholder image URL
@@ -26,6 +26,8 @@ export default function GalleryPage({ item }: GalleryPageProps) {
     const [selectedImage, setSelectedImage] = useState<string>(placeholderImage);
     const [loading, setLoading] = useState<boolean>(true);
     const [zoomed, setZoomed] = useState<boolean>(false);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // Only update state if `item` and `item.image` are valid
     useEffect(() => {
@@ -39,6 +41,30 @@ export default function GalleryPage({ item }: GalleryPageProps) {
         setZoomed(!zoomed);
     };
 
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current || !zoomed) return;
+
+        // Get container dimensions and position
+        const rect = containerRef.current.getBoundingClientRect();
+
+        // Calculate position as percentage values (0 to 1)
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+
+        // Limit values to between 0 and 1
+        const clampedX = Math.max(0, Math.min(1, x));
+        const clampedY = Math.max(0, Math.min(1, y));
+
+        setPosition({ x: clampedX, y: clampedY });
+    };
+
+    // Reset position when zoom is turned off
+    useEffect(() => {
+        if (!zoomed) {
+            setPosition({ x: 0.5, y: 0.5 }); // Center position
+        }
+    }, [zoomed]);
+
     if (!item) {
         return <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
             <p className="text-gray-500">Loading...</p>
@@ -50,6 +76,11 @@ export default function GalleryPage({ item }: GalleryPageProps) {
             <p className="text-gray-500">Loading images...</p>
         </div>;
     }
+
+    // Calculate transform value for cursor-following zoom
+    const transformValue = zoomed
+        ? `scale(2.5) translate(${(0.5 - position.x) * 100}%, ${(0.5 - position.y) * 100}%)`
+        : 'scale(1) translate(0%, 0%)';
 
     return (
         <div className="container mx-auto">
@@ -80,17 +111,21 @@ export default function GalleryPage({ item }: GalleryPageProps) {
 
                 {/* Main Image with zoom functionality */}
                 <div
-                    className="relative flex items-center justify-center w-full lg:flex-1 aspect-square shadow-lg rounded-lg bg-white overflow-hidden"
+                    ref={containerRef}
+                    className={`relative flex items-center justify-center w-full lg:flex-1 aspect-square shadow-lg rounded-lg bg-white overflow-hidden ${zoomed ? 'cursor-none' : 'cursor-zoom-in'
+                        }`}
                     style={{ height: '400px' }}
                     onClick={handleImageClick}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => zoomed && setZoomed(false)}
                 >
-                    <div className={`relative w-full h-full flex items-center justify-center ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
-                        }`}>
+                    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                         <Image
                             src={selectedImage}
                             alt={item.name || "Product image"}
                             fill={true}
-                            className={`object-contain transition-all duration-300 ${zoomed ? 'scale-150' : 'scale-100'}`}
+                            className="object-contain transition-transform duration-100"
+                            style={{ transform: transformValue }}
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     </div>
@@ -103,6 +138,17 @@ export default function GalleryPage({ item }: GalleryPageProps) {
                                 <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                             </svg>
                         </div>
+                    )}
+
+                    {/* Custom cursor indicator when zoomed */}
+                    {zoomed && (
+                        <div className="absolute w-6 h-6 border-2 border-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20"
+                            style={{
+                                left: `${position.x * 100}%`,
+                                top: `${position.y * 100}%`,
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                            }}
+                        />
                     )}
                 </div>
             </div>
