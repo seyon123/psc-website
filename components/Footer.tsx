@@ -117,18 +117,24 @@ export default function Footer() {
                         <address className={`not-italic ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} space-y-2`}>
                             <div className="flex items-start">
                                 <BuildingOfficeIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                                <p>123 Industry Avenue<br />Toronto, ON M5V 2H1<br />Canada</p>
+                                <p>3300 Steeles Ave. West <br />Concord, ON L4K 2Y4<br />Canada</p>
                             </div>
                             <div className="flex items-center mt-4">
                                 <PhoneIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-                                <a href="tel:+14165551234" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
-                                    (416) 555-1234
+                                <a href="tel:+18002469689" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                                    1-800-246-9689
+                                </a>
+                            </div>
+                            <div className="flex items-center mt-4">
+                                <PhoneIcon className="h-5 w-5 mr-2 flex-shrink-0" />
+                                <a href="tel:+1905761133" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                                    (905) 761-1733
                                 </a>
                             </div>
                             <div className="flex items-center">
                                 <EnvelopeIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-                                <a href="mailto:info@pscompany.com" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
-                                    info@pscompany.com
+                                <a href="mailto:info@pscclean.com" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>
+                                    info@pscclean.com
                                 </a>
                             </div>
                         </address>
@@ -139,17 +145,17 @@ export default function Footer() {
                 <div className={`mt-12 pt-8 border-t ${isDarkMode ? 'border-gray-800' : 'border-gray-200'} flex flex-col md:flex-row justify-between items-center`}>
                     <div className="flex space-x-6 mb-4 md:mb-0">
                         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
-                            className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'} p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
+                            className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'} p-2 rounded-full hover:bg-gray-100 transition-colors`}
                             aria-label="Facebook">
                             <FaFacebook className="h-6 w-6" />
                         </a>
                         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-                            className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'} p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
+                            className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'} p-2 rounded-full hover:bg-gray-100 transition-colors`}
                             aria-label="Twitter">
                             <FaInstagram className="h-6 w-6" />
                         </a>
                         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                            className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'} p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
+                            className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'} p-2 rounded-full hover:bg-gray-100 transition-colors`}
                             aria-label="LinkedIn">
                             <FaLinkedin className="h-6 w-6" />
                         </a>

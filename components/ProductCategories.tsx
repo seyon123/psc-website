@@ -1,11 +1,15 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { getProductLines } from "@/lib/api";
 import { ProductLine } from "@/types/products";
 import Image from "next/image";
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    ArrowRightIcon
+} from '@heroicons/react/24/solid';
 import { useTheme } from 'next-themes';
 
 // Placeholder image URL
@@ -24,7 +28,8 @@ export default function ProductCategories() {
     const [isLoading, setIsLoading] = useState(true);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const { theme } = useTheme();
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const { resolvedTheme } = useTheme();
 
     // Set mounted to true after component mounts
     useEffect(() => {
@@ -83,6 +88,13 @@ export default function ProductCategories() {
                 setCurrentPage(currentPage + 1);
                 setIsTransitioning(false);
             }, 300);
+        } else {
+            // Loop back to first page when at the end
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentPage(1);
+                setIsTransitioning(false);
+            }, 300);
         }
     };
 
@@ -93,11 +105,18 @@ export default function ProductCategories() {
                 setCurrentPage(currentPage - 1);
                 setIsTransitioning(false);
             }, 300);
+        } else {
+            // Loop to last page when at the beginning
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentPage(totalPages);
+                setIsTransitioning(false);
+            }, 300);
         }
     };
 
     // Determine if we're in dark mode
-    const isDarkMode = theme === 'dark';
+    const isDarkMode = mounted && resolvedTheme === 'dark';
 
     // Generate dots for pagination indicator
     const renderPaginationDots = () => {
@@ -105,8 +124,12 @@ export default function ProductCategories() {
             <button
                 key={index}
                 className={`h-3 w-3 rounded-full mx-1 transition-all duration-300 cursor-pointer ${currentPage === index + 1
-                        ? isDarkMode ? 'bg-blue-400 w-6' : 'bg-blue-600 w-6'
-                        : isDarkMode ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-300 hover:bg-gray-400'
+                        ? isDarkMode
+                            ? 'bg-blue-400 w-6'
+                            : 'bg-blue-600 w-6'
+                        : isDarkMode
+                            ? 'bg-gray-600 hover:bg-gray-500'
+                            : 'bg-gray-300 hover:bg-gray-400'
                     }`}
                 onClick={() => {
                     setIsTransitioning(true);
@@ -134,11 +157,15 @@ export default function ProductCategories() {
     }
 
     return (
-        <section className={`${isDarkMode ? 'bg-gradient-to-b from-gray-900 to-gray-800' : 'bg-gradient-to-b from-white to-gray-50'} py-16`}>
+        <section className={`${isDarkMode
+                ? 'bg-gradient-to-b from-gray-900 to-gray-800'
+                : 'bg-gradient-to-b from-white to-gray-50'
+            } py-16`}
+        >
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
                     <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                        Explore Our Product Categories
+                        Explore Our Products
                     </h2>
                     <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}>
                         Discover our professional pressure washing equipment designed for industrial and commercial applications.
@@ -151,24 +178,31 @@ export default function ProductCategories() {
                     </div>
                 ) : (
                     <>
-                        <div className="relative">
-                            {/* Previous Button (positioned absolutely) */}
+                        {/* Main container with arrows on the sides */}
+                        <div className="flex items-center justify-center relative">
+                            {/* Left Arrow */}
                             <button
                                 onClick={handlePrevPage}
                                 disabled={currentPage === 1}
-                                className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:translate-x-0 z-10 ${isDarkMode
-                                        ? 'bg-gray-800/80 hover:bg-gray-800 text-blue-400'
-                                        : 'bg-white/80 hover:bg-white text-blue-600'
-                                    } p-2 md:p-3 rounded-full shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer`}
+                                className={`${isDarkMode
+                                        ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
+                                        : 'bg-white text-blue-600 hover:bg-gray-100'
+                                    } h-12 w-12 rounded-full shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center absolute left-0 lg:-left-6 z-10`}
                                 aria-label="Previous page"
                             >
                                 <ChevronLeftIcon className="w-6 h-6" />
                             </button>
 
                             {/* Cards Container */}
-                            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+                            <div
+                                className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 transition-opacity duration-300 w-full ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+                                ref={carouselRef}
+                            >
                                 {currentProductLines.map((productLine: ProductLine) => (
-                                    <div key={productLine.slug} className="group cursor-pointer">
+                                    <div
+                                        key={productLine.slug}
+                                        className="group cursor-pointer"
+                                    >
                                         <Link href={`/products/${productLine.slug}`} className="block h-full">
                                             <div className={`${isDarkMode
                                                     ? 'bg-gray-800 shadow-gray-900/30 hover:shadow-blue-900/20'
@@ -181,9 +215,9 @@ export default function ProductCategories() {
                                                         alt={productLine.name}
                                                         fill={true}
                                                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        className="object-contain p-2 transition-all duration-500 group-hover:scale-105"
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                                 </div>
 
                                                 <div className="p-6 flex-1 flex flex-col justify-between">
@@ -202,14 +236,7 @@ export default function ProductCategories() {
                                                             } text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 group-hover:gap-3 cursor-pointer`}
                                                     >
                                                         View Products
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            className="h-5 w-5 transition-transform group-hover:translate-x-1"
-                                                            viewBox="0 0 20 20"
-                                                            fill="currentColor"
-                                                        >
-                                                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                        </svg>
+                                                        <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -218,14 +245,14 @@ export default function ProductCategories() {
                                 ))}
                             </div>
 
-                            {/* Next Button (positioned absolutely) */}
+                            {/* Right Arrow */}
                             <button
                                 onClick={handleNextPage}
                                 disabled={currentPage === totalPages}
-                                className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-0 z-10 ${isDarkMode
-                                        ? 'bg-gray-800/80 hover:bg-gray-800 text-blue-400'
-                                        : 'bg-white/80 hover:bg-white text-blue-600'
-                                    } p-2 md:p-3 rounded-full shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer`}
+                                className={`${isDarkMode
+                                        ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
+                                        : 'bg-white text-blue-600 hover:bg-gray-100'
+                                    } h-12 w-12 rounded-full shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center absolute right-0 lg:-right-6 z-10`}
                                 aria-label="Next page"
                             >
                                 <ChevronRightIcon className="w-6 h-6" />
@@ -237,7 +264,7 @@ export default function ProductCategories() {
                             {renderPaginationDots()}
                         </div>
 
-                        {/* Page Counter (optional, can be removed) */}
+                        {/* Page Counter */}
                         <div className={`text-center mt-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
                             Page {currentPage} of {totalPages}
                         </div>
