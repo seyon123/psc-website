@@ -16,4 +16,5 @@ export type Product = {
     description?: string; // Rich text as a string
     shortDescription?: string;
     image?: StrapiImage[];
+    product_line: ProductLine;
 };
