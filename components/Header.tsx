@@ -63,6 +63,7 @@ export default function Header() {
         label: category.name,
       })),
     },
+    { href: "/service", label: "Request Service" },
     { href: "/about", label: "About Us" },
     { href: "/contact", label: "Contact" },
   ];

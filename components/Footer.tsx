@@ -94,8 +94,6 @@ export default function Footer() {
                         <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Products</h3>
                         <ul className="space-y-2">
                             <li><Link href="/products" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>All Products</Link></li>
-                            <li><Link href="/products/pressure-washers" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Pressure Washers</Link></li>
-                            <li><Link href="/products/waste-water-treatment" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Waste Water Treatment</Link></li>
                             <li><Link href="/parts-and-accessories" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Parts & Accessories</Link></li>
                         </ul>
                     </div>
@@ -106,7 +104,7 @@ export default function Footer() {
                         <ul className="space-y-2">
                             <li><Link href="/about" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>About Us</Link></li>
                             <li><Link href="/contact" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Contact</Link></li>
-                            <li><Link href="/services" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Services</Link></li>
+                            <li><Link href="/service" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Request Service</Link></li>
                             <li><Link href="/blog" className={`${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Blog</Link></li>
                         </ul>
                     </div>
