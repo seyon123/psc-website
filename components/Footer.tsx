@@ -117,7 +117,7 @@ export default function Footer() {
                         <address className={`not-italic ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} space-y-2`}>
                             <div className="flex items-start">
                                 <BuildingOfficeIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                                <p>3300 Steeles Ave. West <br />Concord, ON L4K 2Y4<br />Canada</p>
+                                <p>3300 Steeles Ave. West #27<br />Concord, ON L4K 2Y4<br />Canada</p>
                             </div>
                             <div className="flex items-center mt-4">
                                 <PhoneIcon className="h-5 w-5 mr-2 flex-shrink-0" />
