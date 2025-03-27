@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import GalleryPage from "@/components/GalleryPage";
+import ProductSpecificationsTable from "@/components/ProductSpecificationsTable";
 import Link from "next/link";
 import { ArrowLeftIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
@@ -125,6 +126,11 @@ export default function ProductPage({ params }: ProductPageProps) {
                         </div>
                     </div>
                 </div>
+
+                {/* Product Specifications Table */}
+                {product.model_specifications && product.model_specifications.length > 0 && (
+                    <ProductSpecificationsTable specifications={product.model_specifications} />
+                )}
 
                 {/* Call to Action */}
                 <div className={`mt-12 p-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg`}>
