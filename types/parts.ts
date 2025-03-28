@@ -14,5 +14,6 @@ export type Part = {
     name: string;
     description?: string; // Rich text as a string
     shortDescription?: string;
+    part_category: PartCategory;
     image?: StrapiImage[];
 };
