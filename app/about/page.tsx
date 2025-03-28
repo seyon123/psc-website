@@ -82,80 +82,148 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our History */}
+      {/* Our History - FIXED TIMELINE */}
       <section className={`py-16 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className="container mx-auto px-4">
           <h2 className={`text-3xl font-bold mb-12 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Our History</h2>
           <div className="max-w-4xl mx-auto">
+            {/* Timeline Container */}
             <div className="relative">
-              {/* Timeline line */}
-              <div className={`absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 ${isDarkMode ? 'bg-blue-700' : 'bg-blue-500'}`}></div>
+              {/* Timeline line - hidden on mobile, visible on md and up */}
+              <div className="hidden md:block absolute left-1/2 -translate-x-1/2 h-full w-1 bg-blue-600"></div>
               
               {/* Timeline points */}
               <div className="space-y-12">
-                {/* 1982 */}
+                {/* 1982 - Modified for better mobile display */}
                 <div className="relative flex flex-col md:flex-row">
-                  <div className="md:w-1/2 md:pr-8 md:text-right mb-8 md:mb-0">
-                    <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>1982</div>
-                    <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Company Founded</h3>
-                    <p>Pressure Systems Company was established with a focus on providing quality equipment to industrial clients in the Northeastern United States.</p>
+                  <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                    <div className="md:text-right">
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>1982</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Company Founded</h3>
+                      <p>Pressure Systems Company was established with a focus on providing quality equipment to industrial clients in the Northeastern United States.</p>
+                    </div>
                   </div>
-                  <div className="absolute left-0 md:left-1/2 transform -translate-y-1/2 md:-translate-x-1/2 flex items-center justify-center">
+                  
+                  {/* Timeline dot - positioned differently on mobile vs desktop */}
+                  <div className="flex md:absolute left-0 md:left-1/2 top-0 md:top-8 md:transform md:-translate-x-1/2 md:-translate-y-1/2 items-center mb-4 md:mb-0">
                     <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                    {/* Mobile timeline line */}
+                    <div className="md:hidden w-full h-1 ml-4 bg-blue-600"></div>
                   </div>
-                  <div className="md:w-1/2 md:pl-8 md:text-left"></div>
+                  
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="md:hidden">
+                      {/* Content is duplicated for mobile view but hidden on desktop */}
+                    </div>
+                  </div>
                 </div>
                 
                 {/* 1995 */}
                 <div className="relative flex flex-col md:flex-row">
-                  <div className="md:w-1/2 md:pr-8 md:text-right"></div>
-                  <div className="absolute left-0 md:left-1/2 transform -translate-y-1/2 md:-translate-x-1/2 flex items-center justify-center">
-                    <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                  <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                    <div className="md:text-right md:hidden">
+                      {/* Content is hidden on desktop but shown on mobile */}
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>1995</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Expansion Across North America</h3>
+                      <p>After successful growth, we expanded our operations to serve clients across all of North America, opening distribution centers in key regions.</p>
+                    </div>
                   </div>
-                  <div className="md:w-1/2 md:pl-8">
-                    <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>1995</div>
-                    <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Expansion Across North America</h3>
-                    <p>After successful growth, we expanded our operations to serve clients across all of North America, opening distribution centers in key regions.</p>
+                  
+                  {/* Timeline dot */}
+                  <div className="flex md:absolute left-0 md:left-1/2 top-0 md:top-8 md:transform md:-translate-x-1/2 md:-translate-y-1/2 items-center mb-4 md:mb-0">
+                    <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                    {/* Mobile timeline line */}
+                    <div className="md:hidden w-full h-1 ml-4 bg-blue-600"></div>
+                  </div>
+                  
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="hidden md:block">
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>1995</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Expansion Across North America</h3>
+                      <p>After successful growth, we expanded our operations to serve clients across all of North America, opening distribution centers in key regions.</p>
+                    </div>
+                    <div className="md:hidden">
+                      {/* Empty div for mobile layout spacing */}
+                    </div>
                   </div>
                 </div>
                 
                 {/* 2008 */}
                 <div className="relative flex flex-col md:flex-row">
-                  <div className="md:w-1/2 md:pr-8 md:text-right">
-                    <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>2008</div>
-                    <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Eco-Friendly Innovation</h3>
-                    <p>We launched our first line of environmentally friendly pressure washing systems, setting new industry standards for water conservation and waste management.</p>
+                  <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                    <div className="md:text-right">
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>2008</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Eco-Friendly Innovation</h3>
+                      <p>We launched our first line of environmentally friendly pressure washing systems, setting new industry standards for water conservation and waste management.</p>
+                    </div>
                   </div>
-                  <div className="absolute left-0 md:left-1/2 transform -translate-y-1/2 md:-translate-x-1/2 flex items-center justify-center">
+                  
+                  {/* Timeline dot */}
+                  <div className="flex md:absolute left-0 md:left-1/2 top-0 md:top-8 md:transform md:-translate-x-1/2 md:-translate-y-1/2 items-center mb-4 md:mb-0">
                     <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                    {/* Mobile timeline line */}
+                    <div className="md:hidden w-full h-1 ml-4 bg-blue-600"></div>
                   </div>
-                  <div className="md:w-1/2 md:pl-8"></div>
+                  
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="md:hidden">
+                      {/* Empty div for mobile layout spacing */}
+                    </div>
+                  </div>
                 </div>
                 
                 {/* 2020 */}
                 <div className="relative flex flex-col md:flex-row">
-                  <div className="md:w-1/2 md:pr-8 md:text-right"></div>
-                  <div className="absolute left-0 md:left-1/2 transform -translate-y-1/2 md:-translate-x-1/2 flex items-center justify-center">
-                    <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                  <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                    <div className="md:text-right md:hidden">
+                      {/* Content is hidden on desktop but shown on mobile */}
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>2020</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Digital Transformation</h3>
+                      <p>We integrated smart technology into our equipment, allowing for remote monitoring, predictive maintenance, and enhanced performance analytics.</p>
+                    </div>
                   </div>
-                  <div className="md:w-1/2 md:pl-8">
-                    <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>2020</div>
-                    <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Digital Transformation</h3>
-                    <p>We integrated smart technology into our equipment, allowing for remote monitoring, predictive maintenance, and enhanced performance analytics.</p>
+                  
+                  {/* Timeline dot */}
+                  <div className="flex md:absolute left-0 md:left-1/2 top-0 md:top-8 md:transform md:-translate-x-1/2 md:-translate-y-1/2 items-center mb-4 md:mb-0">
+                    <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                    {/* Mobile timeline line */}
+                    <div className="md:hidden w-full h-1 ml-4 bg-blue-600"></div>
+                  </div>
+                  
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="hidden md:block">
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>2020</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Digital Transformation</h3>
+                      <p>We integrated smart technology into our equipment, allowing for remote monitoring, predictive maintenance, and enhanced performance analytics.</p>
+                    </div>
+                    <div className="md:hidden">
+                      {/* Empty div for mobile layout spacing */}
+                    </div>
                   </div>
                 </div>
                 
                 {/* Today */}
                 <div className="relative flex flex-col md:flex-row">
-                  <div className="md:w-1/2 md:pr-8 md:text-right">
-                    <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Today</div>
-                    <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Industry Leader</h3>
-                    <p>Today, Pressure Systems Company stands as an industry leader with over 10,000 installed systems across North America, continuing to drive innovation and excellence in pressure washing equipment.</p>
+                  <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                    <div className="md:text-right">
+                      <div className={`mb-2 text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Today</div>
+                      <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Industry Leader</h3>
+                      <p>Today, Pressure Systems Company stands as an industry leader with over 10,000 installed systems across North America, continuing to drive innovation and excellence in pressure washing equipment.</p>
+                    </div>
                   </div>
-                  <div className="absolute left-0 md:left-1/2 transform -translate-y-1/2 md:-translate-x-1/2 flex items-center justify-center">
+                  
+                  {/* Timeline dot */}
+                  <div className="flex md:absolute left-0 md:left-1/2 top-0 md:top-8 md:transform md:-translate-x-1/2 md:-translate-y-1/2 items-center mb-4 md:mb-0">
                     <div className={`w-6 h-6 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-blue-600'}`}></div>
+                    {/* Mobile timeline line */}
+                    <div className="md:hidden w-full h-1 ml-4 bg-blue-600"></div>
                   </div>
-                  <div className="md:w-1/2 md:pl-8"></div>
+                  
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="md:hidden">
+                      {/* Empty div for mobile layout spacing */}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
