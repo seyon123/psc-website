@@ -1,12 +1,12 @@
 "use client";
 
 import { getProductBySlug, processRichText } from "@/lib/api";
-import { Product } from "@/types/products";
+import { ProductWithModels } from "@/types/models";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import GalleryPage from "@/components/GalleryPage";
-import ProductSpecificationsTable from "@/components/ProductSpecificationsTable";
+import ProductModelsTable from "@/components/ProductModelsTable";
 import Link from "next/link";
 import { ArrowLeftIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
@@ -24,7 +24,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     const resolvedParams = use(params);
     const { productLineSlug, productSlug } = resolvedParams;
 
-    const [product, setProduct] = useState<Product>();
+    const [product, setProduct] = useState<ProductWithModels>();
     const [isLoading, setIsLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
     const { resolvedTheme } = useTheme();
@@ -127,9 +127,15 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </div>
                 </div>
 
-                {/* Product Specifications Table */}
-                {product.model_specifications && product.model_specifications.length > 0 && (
-                    <ProductSpecificationsTable specifications={product.model_specifications} />
+                {/* Product Models Table */}
+                {product.models && product.models.modelTables && product.models.modelTables.length > 0 && (
+                    <div className={`mt-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden p-6`}>
+                        <ProductModelsTable 
+                            modelTables={product.models.modelTables} 
+                            productSlug={productSlug}
+                            productLineSlug={productLineSlug}
+                        />
+                    </div>
                 )}
 
                 {/* Call to Action */}

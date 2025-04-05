@@ -53,7 +53,7 @@ export async function getProductLineBySlug(slug: string) {
 
 export async function getProductBySlug(slug: string) {
     try {
-        const response = await fetch(API_URL + `/products?filters[slug][$eq]=${slug}&populate=*`);
+        const response = await fetch(API_URL + `/products?filters[slug][$eq]=${slug}&populate=image&populate=models.modelTables`);
         if (!response.ok) {
             throw new Error(`Failed to fetch product: ${response.statusText}`);
         }

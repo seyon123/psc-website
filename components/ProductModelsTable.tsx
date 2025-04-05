@@ -1,0 +1,212 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon } from '@heroicons/react/24/solid';
+import ModelComparison from './ModelComparison';
+
+interface ModelRow {
+  [key: string]: string | number | boolean | undefined;
+}
+
+interface ModelTableData {
+  title: string;
+  columns: string[];
+  rows: ModelRow[];
+}
+
+interface ProductModelsTableProps {
+  modelTables: ModelTableData[];
+  productSlug: string;
+  productLineSlug: string;
+}
+
+const ProductModelsTable: React.FC<ProductModelsTableProps> = ({ 
+  modelTables, 
+  productSlug,
+  productLineSlug
+}) => {
+  const { resolvedTheme } = useTheme();
+  const isDarkMode = resolvedTheme === 'dark';
+  const router = useRouter();
+  
+  // Comparison state
+  const [selectedModels, setSelectedModels] = useState<ModelRow[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
+  const [activeTable, setActiveTable] = useState<ModelTableData | null>(null);
+  
+  // Max number of models that can be compared
+  const MAX_COMPARE_MODELS = 4;
+
+  // Toggle model selection for comparison
+  const toggleModelSelection = (e: React.MouseEvent, model: ModelRow, tableData: ModelTableData) => {
+    e.stopPropagation(); // Prevent row click
+    setActiveTable(tableData);
+    
+    if (selectedModels.some(m => m.model === model.model)) {
+      // Remove from selection if already selected
+      setSelectedModels(selectedModels.filter(m => m.model !== model.model));
+    } else {
+      // Add to selection if not at max limit
+      if (selectedModels.length < MAX_COMPARE_MODELS) {
+        setSelectedModels([...selectedModels, model]);
+      }
+    }
+  };
+
+  // Check if a model is selected
+  const isModelSelected = (model: ModelRow) => {
+    return selectedModels.some(m => m.model === model.model);
+  };
+
+  // Start comparison
+  const startComparison = () => {
+    if (selectedModels.length > 1 && activeTable) {
+      setShowComparison(true);
+    }
+  };
+
+  // Close comparison
+  const closeComparison = () => {
+    setShowComparison(false);
+  };
+
+  // Handle row click to navigate to model details
+  const handleRowClick = (model: ModelRow) => {
+    router.push(`/products/${productLineSlug}/${productSlug}/models/${model.model?.toString().toLowerCase() || 'model'}`);
+  };
+
+  if (!modelTables || modelTables.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="w-full space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          Available Models
+        </h2>
+        
+        {/* Compare Models Button - Only show if at least 2 models are selected */}
+        {selectedModels.length >= 2 && (
+          <button 
+            onClick={startComparison}
+            className={`flex items-center px-4 py-2 rounded-lg ${
+              isDarkMode 
+                ? 'bg-blue-700 hover:bg-blue-600' 
+                : 'bg-blue-600 hover:bg-blue-700'
+            } text-white transition-colors`}
+          >
+            <ArrowsRightLeftIcon className="h-5 w-5 mr-2" />
+            Compare {selectedModels.length} Models
+          </button>
+        )}
+      </div>
+
+      {modelTables.map((table, tableIndex) => (
+        <div 
+          key={tableIndex} 
+          className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-md overflow-hidden transition-all duration-300 mb-6`}
+        >
+          {/* Table Content - Always visible */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                  <th className="w-12 px-2 py-3"></th> 
+                  {table.columns.map((column, colIndex) => (
+                    <th 
+                      key={colIndex}
+                      className={`px-4 py-3 text-left text-sm font-medium ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                      } uppercase tracking-wider whitespace-nowrap`}
+                    >
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {table.rows.map((row, rowIndex) => (
+                  <tr 
+                    key={rowIndex}
+                    onClick={() => handleRowClick(row)}
+                    className={`${
+                      rowIndex % 2 === 0
+                        ? isDarkMode ? 'bg-gray-800' : 'bg-white'
+                        : isDarkMode ? 'bg-gray-750' : 'bg-gray-50'
+                    } hover:bg-opacity-90 transition-colors cursor-pointer hover:${
+                      isDarkMode ? 'bg-gray-700' : 'bg-blue-50'
+                    }`}
+                  >
+                    {/* Compare checkbox */}
+                    <td className="w-12 px-2 py-3">
+                      <button
+                        onClick={(e) => toggleModelSelection(e, row, table)}
+                        className={`
+                          p-2 rounded-full 
+                          transition-all duration-200 
+                          ${isModelSelected(row)
+                            ? isDarkMode
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-blue-600 text-white'
+                            : isDarkMode
+                              ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }
+                          ${selectedModels.length >= MAX_COMPARE_MODELS && !isModelSelected(row)
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'cursor-pointer'
+                          }
+                        `}
+                        disabled={selectedModels.length >= MAX_COMPARE_MODELS && !isModelSelected(row)}
+                        title={isModelSelected(row) ? "Remove from comparison" : "Add to comparison"}
+                      >
+                        <DocumentDuplicateIcon className="h-4 w-4" />
+                      </button>
+                    </td>
+                    
+                    {/* Model data */}
+                    {table.columns.map((column, cellIndex) => {
+                      const columnKey = column.toLowerCase().replace(/\s/g, '_').replace(/[()."]/g, '');
+                      const cellValue = row[columnKey];
+                      return (
+                        <td 
+                          key={cellIndex}
+                          className={`px-4 py-3 text-sm ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                          } whitespace-nowrap`}
+                        >
+                          {typeof cellValue === 'boolean' 
+                            ? (cellValue 
+                              ? '✓' 
+                              : '-')
+                            : cellValue ?? '-'}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+
+      {/* Comparison Modal */}
+      {showComparison && activeTable && (
+        <ModelComparison 
+          models={selectedModels} 
+          columns={activeTable.columns}
+          title={activeTable.title}
+          onClose={closeComparison}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ProductModelsTable;
