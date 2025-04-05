@@ -1,6 +1,7 @@
 // app/layout.tsx
 import './globals.css';
 import { ThemeProvider } from '@/app/providers/ThemeProvider';
+import { ChatProvider } from '@/app/providers/ChatProvider';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { defaultMetadata } from '@/lib/metadata';
@@ -16,14 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preload critical fonts */}
-        <link
-          rel="preload"
-          href="/fonts/inter-var-latin.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        
         {/* Schema.org structured data */}
         <script
           type="application/ld+json"
@@ -52,13 +46,15 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <ChatProvider>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </ChatProvider>
         </ThemeProvider>
       </body>
     </html>
