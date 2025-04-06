@@ -1,7 +1,8 @@
 "use client";
 
 import { getProductBySlug, processRichText } from "@/lib/api";
-import { ProductWithModels, ModelRow } from "@/types/models";
+import { ProductWithModels } from "@/types/models";
+import { ModelRow } from "@/types/models";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -11,6 +12,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeftIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
+import { useSearchParams } from "next/navigation";
 import { use } from "react";
 
 type ProductPageProps = {
@@ -27,6 +29,11 @@ export default function ProductPage({ params }: ProductPageProps) {
     // Unwrap the params Promise using React.use()
     const resolvedParams = use(params);
     const { productLineSlug, productSlug } = resolvedParams;
+    
+    // Router for navigation
+    // Search params for model parameter
+    const searchParams = useSearchParams();
+    const modelParam = searchParams.get('model');
 
     const [product, setProduct] = useState<ProductWithModels>();
     const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +65,29 @@ export default function ProductPage({ params }: ProductPageProps) {
                     setCurrentImage(productImageUrl);
                     setDefaultImage(productImageUrl);
                 }
+                
+                // Check if there's a model in the URL and select it
+                if (modelParam && data?.models?.modelTables) {
+                    // Find the model across all model tables
+                    let foundModel: ModelRow | null = null;
+                    
+                    data.models.modelTables.forEach((table: { rows: ModelRow[] }) => {
+                        const model = table.rows.find((row: ModelRow) => 
+                            row.model?.toString().toLowerCase() === modelParam.toLowerCase()
+                        );
+                        if (model) foundModel = model;
+                    });
+                    
+                    if (foundModel) {
+                        // Set the found model as selected
+                        setSelectedModel(foundModel);
+                        
+                        // Update the image if the model has one
+                        if (foundModel.image) {
+                            setCurrentImage(getImageUrl(foundModel.image));
+                        }
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching product:", error);
             } finally {
@@ -66,7 +96,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         };
 
         fetchProduct();
-    }, [productSlug]);
+    }, [productSlug, modelParam]);
 
     // Handler for when a model is clicked
     const handleModelSelect = (model: ModelRow) => {
@@ -79,6 +109,33 @@ export default function ProductPage({ params }: ProductPageProps) {
         } else if (defaultImage) {
             // Fall back to default product image if model has no image
             setCurrentImage(defaultImage);
+        }
+        
+        // Update the URL with the selected model using browser history API directly
+        // This avoids any page refresh or scroll jumping that might happen with router
+        const modelStr = model.model?.toString().toLowerCase();
+        if (modelStr && typeof window !== 'undefined') {
+            // Create the new URL using current path and updated model parameter
+            const url = new URL(window.location.href);
+            url.searchParams.set('model', modelStr);
+            
+            // Update browser history without triggering navigation
+            window.history.pushState({ path: url.toString() }, '', url.toString());
+        }
+    };
+
+    // Handler for clearing model selection
+    const clearModelSelection = () => {
+        setSelectedModel(null);
+        setCurrentImage(defaultImage);
+        
+        // Remove model from URL using browser history API
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('model');
+            
+            // Update browser history without triggering navigation
+            window.history.pushState({ path: url.toString() }, '', url.toString());
         }
     };
 
@@ -236,10 +293,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {selectedModel && (
                     <div className="flex justify-end mt-4">
                         <button
-                            onClick={() => {
-                                setSelectedModel(null);
-                                setCurrentImage(defaultImage);
-                            }}
+                            onClick={clearModelSelection}
                             className={`px-4 py-2 rounded-lg text-sm ${isDarkMode
                                     ? 'bg-gray-700 hover:bg-gray-600 text-white'
                                     : 'bg-gray-200 hover:bg-gray-300 text-gray-800'

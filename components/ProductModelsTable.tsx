@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { DocumentDuplicateIcon } from '@heroicons/react/24/solid';
 import ModelComparison from './ModelComparison';
@@ -29,14 +28,11 @@ interface ProductModelsTableProps {
 
 const ProductModelsTable: React.FC<ProductModelsTableProps> = ({ 
   modelTables, 
-  productSlug,
-  productLineSlug,
   onModelSelect,
   selectedModel
 }) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
-  const router = useRouter();
   
   // Comparison state
   const [selectedModels, setSelectedModels] = useState<ModelRow[]>([]);
@@ -90,8 +86,36 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
     if (onModelSelect) {
       onModelSelect(model);
     } else {
-      // Otherwise navigate to model details (fallback behavior)
-      router.push(`/products/${productLineSlug}/${productSlug}/models/${model.model?.toString().toLowerCase() || 'model'}`);
+      // Otherwise update URL directly with the browser history API
+      // This provides the smoothest experience with no refresh or scroll jump
+      const modelStr = model.model?.toString().toLowerCase();
+      if (modelStr && typeof window !== 'undefined') {
+        // Create URL with model parameter
+        const url = new URL(window.location.href);
+        url.searchParams.set('model', modelStr);
+        
+        // Update browser history without navigation
+        window.history.pushState({ path: url.toString() }, '', url.toString());
+        
+        // Find and select the model from available tables
+        let modelToSelect: ModelRow | null = null;
+        modelTables.forEach(table => {
+          const foundModel = table.rows.find(row => 
+            row.model?.toString().toLowerCase() === modelStr.toLowerCase()
+          );
+          if (foundModel) modelToSelect = foundModel;
+        });
+        
+        // Update UI without navigation
+        if (modelToSelect) {
+          // Since we don't have direct access to the product page state,
+          // we need to force a state update by simulating selection
+          setTimeout(() => {
+            const modelElement = document.querySelector(`[data-model="${modelStr}"]`);
+            if (modelElement) modelElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
+      }
     }
   };
 
@@ -150,6 +174,7 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                   <tr 
                     key={rowIndex}
                     onClick={() => handleRowClick(row)}
+                    data-model={row.model?.toString().toLowerCase()}
                     className={`
                       ${rowIndex % 2 === 0
                         ? isDarkMode ? 'bg-gray-800' : 'bg-white'
