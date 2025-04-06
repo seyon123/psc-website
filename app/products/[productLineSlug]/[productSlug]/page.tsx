@@ -1,13 +1,14 @@
 "use client";
 
 import { getProductBySlug, processRichText } from "@/lib/api";
-import { ProductWithModels } from "@/types/models";
+import { ProductWithModels, ModelRow } from "@/types/models";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import GalleryPage from "@/components/GalleryPage";
 import ProductModelsTable from "@/components/ProductModelsTable";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeftIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
 import { use } from "react";
@@ -19,6 +20,9 @@ type ProductPageProps = {
     }>;
 };
 
+// Helper function to get the full image URL
+const getImageUrl = (url?: string) => url ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${url}` : "/placeholder-image.jpg";
+
 export default function ProductPage({ params }: ProductPageProps) {
     // Unwrap the params Promise using React.use()
     const resolvedParams = use(params);
@@ -28,6 +32,13 @@ export default function ProductPage({ params }: ProductPageProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
     const { resolvedTheme } = useTheme();
+
+    // State for the current displayed image
+    const [currentImage, setCurrentImage] = useState<string | null>(null);
+    // Default product image for fallback
+    const [defaultImage, setDefaultImage] = useState<string | null>(null);
+    // State for the currently selected model
+    const [selectedModel, setSelectedModel] = useState<ModelRow | null>(null);
 
     // Set mounted to true after component mounts
     useEffect(() => {
@@ -40,6 +51,13 @@ export default function ProductPage({ params }: ProductPageProps) {
             try {
                 const data = await getProductBySlug(productSlug);
                 setProduct(data);
+
+                // Set default image from product
+                if (data?.image && data.image.length > 0 && data.image[0].url) {
+                    const productImageUrl = getImageUrl(data.image[0].url);
+                    setCurrentImage(productImageUrl);
+                    setDefaultImage(productImageUrl);
+                }
             } catch (error) {
                 console.error("Error fetching product:", error);
             } finally {
@@ -49,6 +67,27 @@ export default function ProductPage({ params }: ProductPageProps) {
 
         fetchProduct();
     }, [productSlug]);
+
+    // Handler for when a model is clicked
+    const handleModelSelect = (model: ModelRow) => {
+        // Set the selected model for displaying specs
+        setSelectedModel(model);
+
+        // Update the displayed image if available, otherwise use default product image
+        if (model.image) {
+            setCurrentImage(getImageUrl(model.image));
+        } else if (defaultImage) {
+            // Fall back to default product image if model has no image
+            setCurrentImage(defaultImage);
+        }
+    };
+
+    // Format specification name for display
+    const formatSpecName = (name: string): string => {
+        return name
+            .replace(/_/g, ' ')
+            .toUpperCase();
+    };
 
     // Determine if we're in dark mode
     const isDarkMode = mounted && resolvedTheme === 'dark';
@@ -99,6 +138,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                         {product.name}
                     </h1>
+                    {selectedModel && (
+                        <span className="text-2xl font-normal">
+                            <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Model:</span> {selectedModel.model}
+                        </span>
+                    )}
+
                     <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                         {product.product_line?.name}
                     </p>
@@ -107,33 +152,109 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {/* Flexbox container to hold gallery and description */}
                 <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
                     <div className="flex flex-col lg:flex-row items-start gap-6 p-6">
-                        {/* Gallery (on larger screens, take up 1/2 of the width) */}
+                        {/* Product Image Section (customized to handle model images) */}
                         <div className="flex-shrink-0 w-full lg:w-1/2">
-                            <GalleryPage item={product} />
+                            {currentImage ? (
+                                <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-md">
+                                    <Image
+                                        src={currentImage}
+                                        alt={selectedModel ? `${product.name} - ${selectedModel.model}` : product.name}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                            ) : (
+                                <GalleryPage item={product} />
+                            )}
                         </div>
 
                         {/* Product Description */}
                         <div className={`flex-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            <div className="prose prose-lg max-w-none">
-                                {product.description ? (
-                                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                                        {processRichText(product.description)}
-                                    </ReactMarkdown>
-                                ) : (
-                                    <p>Detailed product information coming soon. Please contact us for specifications and pricing.</p>
-                                )}
-                            </div>
+                            {/* Show selected model specifications if a model is selected */}
+                            {selectedModel ? (
+                                <div>
+                                    <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                                        {selectedModel.model} Specifications
+                                    </h2>
+                                    <div className={`p-4 rounded-lg mb-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                        <table className="w-full">
+                                            <tbody>
+                                                {Object.entries(selectedModel)
+                                                    .filter(([key]) => !['model', 'image'].includes(key)) // Exclude model and image
+                                                    .map(([key, value]) => (
+                                                        <tr key={key} className={`border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                                                            <th className={`py-2 px-4 text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                                                {formatSpecName(key)}
+                                                            </th>
+                                                            <td className="py-2 px-4">
+                                                                {typeof value === 'boolean'
+                                                                    ? (value ? '✓' : '-')
+                                                                    : value}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="mt-4">
+                                        <h3 className={`text-xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                                            Product Description
+                                        </h3>
+                                        <div className="prose prose-lg max-w-none">
+                                            {product.description ? (
+                                                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                                                    {processRichText(product.description)}
+                                                </ReactMarkdown>
+                                            ) : (
+                                                <p>Detailed product information coming soon. Please contact us for more details.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                // Show default product description when no model is selected
+                                <div className="prose prose-lg max-w-none">
+                                    {product.description ? (
+                                        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                                            {processRichText(product.description)}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        <p>Detailed product information coming soon. Please contact us for specifications and pricing.</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
+                {/* Clear Selected Model button - only show when a model is selected */}
+                {selectedModel && (
+                    <div className="flex justify-end mt-4">
+                        <button
+                            onClick={() => {
+                                setSelectedModel(null);
+                                setCurrentImage(defaultImage);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm ${isDarkMode
+                                    ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                                } transition-colors`}
+                        >
+                            Clear Model Selection
+                        </button>
+                    </div>
+                )}
+
                 {/* Product Models Table */}
                 {product.models && product.models.modelTables && product.models.modelTables.length > 0 && (
                     <div className={`mt-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden p-6`}>
-                        <ProductModelsTable 
-                            modelTables={product.models.modelTables} 
+                        <ProductModelsTable
+                            modelTables={product.models.modelTables}
                             productSlug={productSlug}
                             productLineSlug={productLineSlug}
+                            onModelSelect={handleModelSelect}
+                            selectedModel={selectedModel}
                         />
                     </div>
                 )}

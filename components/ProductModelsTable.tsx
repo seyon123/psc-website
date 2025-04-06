@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { DocumentDuplicateIcon } from '@heroicons/react/24/solid';
@@ -10,6 +9,8 @@ import ModelComparison from './ModelComparison';
 
 interface ModelRow {
   [key: string]: string | number | boolean | undefined;
+  model?: string | number;
+  image?: string; // Kept for reference, but won't be displayed in the table
 }
 
 interface ModelTableData {
@@ -22,12 +23,16 @@ interface ProductModelsTableProps {
   modelTables: ModelTableData[];
   productSlug: string;
   productLineSlug: string;
+  onModelSelect?: (model: ModelRow) => void; // Callback to update main product image and specs
+  selectedModel?: ModelRow | null; // Currently selected model
 }
 
 const ProductModelsTable: React.FC<ProductModelsTableProps> = ({ 
   modelTables, 
   productSlug,
-  productLineSlug
+  productLineSlug,
+  onModelSelect,
+  selectedModel
 }) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
@@ -57,9 +62,14 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
     }
   };
 
-  // Check if a model is selected
+  // Check if a model is selected for comparison
   const isModelSelected = (model: ModelRow) => {
     return selectedModels.some(m => m.model === model.model);
+  };
+  
+  // Check if a model is the currently selected model for display
+  const isCurrentlySelectedModel = (model: ModelRow) => {
+    return selectedModel && model.model === selectedModel.model;
   };
 
   // Start comparison
@@ -74,9 +84,15 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
     setShowComparison(false);
   };
 
-  // Handle row click to navigate to model details
+  // Handle row click
   const handleRowClick = (model: ModelRow) => {
-    router.push(`/products/${productLineSlug}/${productSlug}/models/${model.model?.toString().toLowerCase() || 'model'}`);
+    // If there's a callback for model selection, use it
+    if (onModelSelect) {
+      onModelSelect(model);
+    } else {
+      // Otherwise navigate to model details (fallback behavior)
+      router.push(`/products/${productLineSlug}/${productSlug}/models/${model.model?.toString().toLowerCase() || 'model'}`);
+    }
   };
 
   if (!modelTables || modelTables.length === 0) {
@@ -116,7 +132,7 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
             <table className="min-w-full">
               <thead>
                 <tr className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                  <th className="w-12 px-2 py-3"></th> 
+                  <th className="w-12 px-2 py-3"></th>
                   {table.columns.map((column, colIndex) => (
                     <th 
                       key={colIndex}
@@ -134,13 +150,18 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                   <tr 
                     key={rowIndex}
                     onClick={() => handleRowClick(row)}
-                    className={`${
-                      rowIndex % 2 === 0
+                    className={`
+                      ${rowIndex % 2 === 0
                         ? isDarkMode ? 'bg-gray-800' : 'bg-white'
                         : isDarkMode ? 'bg-gray-750' : 'bg-gray-50'
-                    } hover:bg-opacity-90 transition-colors cursor-pointer hover:${
-                      isDarkMode ? 'bg-gray-700' : 'bg-blue-50'
-                    }`}
+                      } 
+                      ${isCurrentlySelectedModel(row) 
+                        ? isDarkMode ? 'bg-blue-900/30 border-l-4 border-blue-500' : 'bg-blue-50 border-l-4 border-blue-500' 
+                        : ''
+                      }
+                      hover:bg-opacity-90 transition-colors cursor-pointer
+                      ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-blue-50'}`
+                    }
                   >
                     {/* Compare checkbox */}
                     <td className="w-12 px-2 py-3">
@@ -177,7 +198,9 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                         <td 
                           key={cellIndex}
                           className={`px-4 py-3 text-sm ${
-                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                            isCurrentlySelectedModel(row)
+                              ? isDarkMode ? 'text-blue-300 font-medium' : 'text-blue-700 font-medium'
+                              : isDarkMode ? 'text-gray-300' : 'text-gray-700'
                           } whitespace-nowrap`}
                         >
                           {typeof cellValue === 'boolean' 

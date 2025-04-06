@@ -3,6 +3,7 @@ import { Product } from "./products";
 
 export type ModelRow = {
   model?: string | number;
+  image?: string;
   [key: string]: string | number | boolean | undefined;
 };
 
