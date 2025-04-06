@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useTheme } from "next-themes";
 import { use } from "react";
 
@@ -84,6 +84,14 @@ export default function ProductLinePage({ params }: { params: Promise<{ productL
             } py-16`}
         >
             <div className="container mx-auto px-4">
+
+                {/* Back to products link */}
+                <Link href={`/products`} className={`inline-flex items-center mb-6 ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
+                    } transition-colors`}>
+                    <ArrowLeftIcon className="h-4 w-4 mr-2" />
+                    Back to Products
+                </Link>
+
                 <div className="mb-12">
                     <h1 className={`text-3xl md:text-4xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                         {productLine.name}
