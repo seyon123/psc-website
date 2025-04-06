@@ -1,7 +1,7 @@
 "use client";
 
 import { getProductBySlug, processRichText } from "@/lib/api";
-import { ProductWithModels, ModelRow } from "@/types/models";
+import { ProductWithModels, ModelRow, ModelTable } from "@/types/models";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -9,7 +9,13 @@ import GalleryPage from "@/components/GalleryPage";
 import ProductModelsTable from "@/components/ProductModelsTable";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeftIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { 
+    ArrowLeftIcon,
+    InformationCircleIcon,
+    CheckCircleIcon,
+    XCircleIcon,
+    Cog8ToothIcon
+} from "@heroicons/react/24/outline";
 import { useTheme } from "next-themes";
 import { useSearchParams } from "next/navigation";
 import { use } from "react";
@@ -101,6 +107,22 @@ export default function ProductPage({ params }: ProductPageProps) {
         fetchProduct();
     }, [productSlug, modelParam]);
 
+    // Get the actual column name from columns array
+    const getColumnName = (propName: string, modelTables: ModelTable[]): string => {
+        // Search for the property in all tables' columns
+        for (const table of modelTables) {
+            // Convert column names to property format and find a match
+            for (const column of table.columns) {
+                const formattedColName = column.toLowerCase().replace(/\s/g, '_').replace(/[()."]/g, '');
+                if (formattedColName === propName) {
+                    return column; // Return the original formatted column name
+                }
+            }
+        }
+        // Fallback to formatting the property name if no match found
+        return propName.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    };
+
     // Handler for when a model is clicked
     const handleModelSelect = (model: ModelRow) => {
         // Set the selected model for displaying specs
@@ -140,13 +162,6 @@ export default function ProductPage({ params }: ProductPageProps) {
             // Update browser history without triggering navigation
             window.history.pushState({ path: url.toString() }, '', url.toString());
         }
-    };
-
-    // Format specification name for display
-    const formatSpecName = (name: string): string => {
-        return name
-            .replace(/_/g, ' ')
-            .toUpperCase();
     };
 
     // Determine if we're in dark mode
@@ -213,11 +228,11 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
                     <div className="flex flex-col lg:flex-row items-start gap-6 p-6">
                         {/* Product Image Section (customized to handle model images) */}
-                        <div className="flex-shrink-0 w-full lg:w-1/2 flex items-center justify-center self-center lg:self-start">
+                        <div className="flex-shrink-0 w-full lg:w-1/2 flex items-center justify-center self-center">
                             <div className="w-full">
                                 {selectedModel ? (
                                     // If a specific model is selected, show its image
-                                    <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-md">
+                                    <div className="relative h-96 w-full rounded-lg overflow-hidden">
                                         <Image
                                             src={currentImage || defaultImage || "/placeholder-image.jpg"}
                                             alt={`${product.name} - ${selectedModel.model?.toString() || 'Selected model'}`}
@@ -237,22 +252,37 @@ export default function ProductPage({ params }: ProductPageProps) {
                             {/* Show selected model specifications if a model is selected */}
                             {selectedModel ? (
                                 <div>
-                                    <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                                        {selectedModel.model} Specifications
+                                    <h2 className={`text-2xl font-bold mb-4 flex items-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                                        <span className={`inline-flex items-center justify-center p-2 rounded-lg ${isDarkMode ? 'bg-blue-900/30' : 'bg-blue-100/70'} mr-3`}>
+                                            <Cog8ToothIcon className={`h-6 w-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                                        </span>
+                                        Model {selectedModel.model} Specifications
                                     </h2>
                                     <div className={`p-4 rounded-lg mb-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                                         <table className="w-full">
                                             <tbody>
                                                 {Object.entries(selectedModel)
                                                     .filter(([key]) => !['model', 'image'].includes(key)) // Exclude model and image
-                                                    .map(([key, value]) => (
-                                                        <tr key={key} className={`border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
-                                                            <th className={`py-2 px-4 text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                                                                {formatSpecName(key)}
+                                                    .map(([key, value], index) => (
+                                                        <tr key={key} className={`border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} ${
+                                                          index % 2 === 0 
+                                                            ? isDarkMode ? 'bg-gray-700/80' : 'bg-gray-50/50' 
+                                                            : ''
+                                                        }`}>
+                                                            <th className={`py-3 px-4 text-left font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+                                                                {product.models?.modelTables ? 
+                                                                  getColumnName(key, product.models.modelTables) : 
+                                                                  key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                                                             </th>
-                                                            <td className="py-2 px-4">
+                                                            <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                                                                 {typeof value === 'boolean'
-                                                                    ? (value ? '✓' : '-')
+                                                                    ? (value 
+                                                                        ? <span className={`inline-flex items-center justify-center p-1 rounded-md ${isDarkMode ? 'bg-green-900/40 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                                                                            <CheckCircleIcon className="w-5 h-5" />
+                                                                          </span>
+                                                                        : <span className={`inline-flex items-center justify-center p-1 rounded-md ${isDarkMode ? 'bg-gray-800/60 text-gray-500' : 'bg-gray-200 text-gray-400'}`}>
+                                                                            <XCircleIcon className="w-5 h-5" />
+                                                                          </span>)
                                                                     : value}
                                                             </td>
                                                         </tr>

@@ -2,8 +2,13 @@
 
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
-import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
-import { DocumentDuplicateIcon } from '@heroicons/react/24/solid';
+import { 
+  ArrowsRightLeftIcon, 
+  DocumentDuplicateIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  Cog8ToothIcon
+} from '@heroicons/react/24/outline';
 import ModelComparison from './ModelComparison';
 
 interface ModelRow {
@@ -126,7 +131,10 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+        <h2 className={`text-2xl font-bold flex items-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <span className={`inline-flex items-center justify-center p-1.5 rounded-lg ${isDarkMode ? 'bg-blue-900/30' : 'bg-blue-100/70'} mr-3`}>
+            <Cog8ToothIcon className={`h-5 w-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+          </span>
           Available Models
         </h2>
         
@@ -160,9 +168,9 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                   {table.columns.map((column, colIndex) => (
                     <th 
                       key={colIndex}
-                      className={`px-4 py-3 text-left text-sm font-medium ${
+                      className={`px-4 py-3 text-sm font-medium ${
                         isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                      } uppercase tracking-wider whitespace-nowrap`}
+                      } uppercase tracking-wider whitespace-nowrap text-center`}
                     >
                       {column}
                     </th>
@@ -184,7 +192,7 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                         ? isDarkMode ? 'bg-blue-900/30 border-l-4 border-blue-500' : 'bg-blue-50 border-l-4 border-blue-500' 
                         : ''
                       }
-                      hover:bg-opacity-90 transition-colors cursor-pointer
+                      hover:bg-opacity-90 transition-colors cursor-pointer text-center
                       ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-blue-50'}`
                     }
                   >
@@ -230,8 +238,12 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                         >
                           {typeof cellValue === 'boolean' 
                             ? (cellValue 
-                              ? '✓' 
-                              : '-')
+                              ? <span className={`inline-flex items-center justify-center p-0.5 rounded-md ${isDarkMode ? 'bg-green-900/40 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                                  <CheckCircleIcon className="w-4 h-4" />
+                                </span>
+                              : <span className={`inline-flex items-center justify-center p-0.5 rounded-md ${isDarkMode ? 'bg-gray-800/60 text-gray-500' : 'bg-gray-200 text-gray-400'}`}>
+                                  <XCircleIcon className="w-4 h-4" />
+                                </span>)
                             : cellValue ?? '-'}
                         </td>
                       );

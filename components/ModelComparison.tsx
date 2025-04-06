@@ -1,8 +1,11 @@
-'use client';
-
 import React from 'react';
 import { useTheme } from 'next-themes';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { 
+  XMarkIcon, 
+  CheckCircleIcon, 
+  XCircleIcon,
+  ArrowsRightLeftIcon 
+} from '@heroicons/react/24/outline';
 import { ModelRow } from '@/types/models';
 
 interface ModelComparisonProps {
@@ -37,7 +40,10 @@ const ModelComparison: React.FC<ModelComparisonProps> = ({
       <div className="min-h-screen p-4 flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center py-4 sticky top-0 z-10">
-          <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <h2 className={`text-2xl font-bold flex items-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <span className={`inline-flex items-center justify-center p-2 rounded-lg ${isDarkMode ? 'bg-blue-900/30' : 'bg-blue-100/70'} mr-3`}>
+              <ArrowsRightLeftIcon className={`h-6 w-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+            </span>
             Model Comparison: {title}
           </h2>
           <button
@@ -96,7 +102,13 @@ const ModelComparison: React.FC<ModelComparisonProps> = ({
                       return (
                         <td key={colIndex} className="py-4 px-6 text-center">
                           {typeof value === 'boolean'
-                            ? (value ? '✓' : '-')
+                            ? (value 
+                                ? <span className={`inline-flex items-center justify-center p-0.5 rounded-md ${isDarkMode ? 'bg-green-900/40 text-green-400' : 'bg-green-100 text-green-600'}`}>
+                                    <CheckCircleIcon className="w-4 h-4" />
+                                  </span>
+                                : <span className={`inline-flex items-center justify-center p-0.5 rounded-md ${isDarkMode ? 'bg-gray-800/60 text-gray-500' : 'bg-gray-200 text-gray-400'}`}>
+                                    <XCircleIcon className="w-4 h-4" />
+                                  </span>)
                             : value ?? '-'}
                         </td>
                       );
