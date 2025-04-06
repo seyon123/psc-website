@@ -46,7 +46,7 @@ const ModelComparison: React.FC<ModelComparisonProps> = ({
               isDarkMode 
                 ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-            } transition-colors`}
+            } transition-colors cursor-pointer`}
             aria-label="Close comparison"
           >
             <XMarkIcon className="h-6 w-6" />

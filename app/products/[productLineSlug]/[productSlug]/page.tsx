@@ -153,19 +153,23 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
                     <div className="flex flex-col lg:flex-row items-start gap-6 p-6">
                         {/* Product Image Section (customized to handle model images) */}
-                        <div className="flex-shrink-0 w-full lg:w-1/2">
-                            {currentImage ? (
-                                <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-md">
-                                    <Image
-                                        src={currentImage}
-                                        alt={selectedModel ? `${product.name} - ${selectedModel.model}` : product.name}
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </div>
-                            ) : (
-                                <GalleryPage item={product} />
-                            )}
+                        <div className="flex-shrink-0 w-full lg:w-1/2 flex items-center justify-center self-center lg:self-start">
+                            <div className="w-full">
+                                {selectedModel ? (
+                                    // If a specific model is selected, show its image
+                                    <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-md">
+                                        <Image
+                                            src={currentImage || (defaultImage || "/placeholder-image.jpg")}
+                                            alt={`${product.name} - ${selectedModel.model}`}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                ) : (
+                                    // If no model is selected, use the GalleryPage for multiple images
+                                    <GalleryPage item={product} />
+                                )}
+                            </div>
                         </div>
 
                         {/* Product Description */}
@@ -239,7 +243,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                             className={`px-4 py-2 rounded-lg text-sm ${isDarkMode
                                     ? 'bg-gray-700 hover:bg-gray-600 text-white'
                                     : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                                } transition-colors`}
+                                } transition-colors cursor-pointer`}
                         >
                             Clear Model Selection
                         </button>

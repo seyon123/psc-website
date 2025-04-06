@@ -114,7 +114,7 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
               isDarkMode 
                 ? 'bg-blue-700 hover:bg-blue-600' 
                 : 'bg-blue-600 hover:bg-blue-700'
-            } text-white transition-colors`}
+            } text-white transition-colors cursor-pointer`}
           >
             <ArrowsRightLeftIcon className="h-5 w-5 mr-2" />
             Compare {selectedModels.length} Models
