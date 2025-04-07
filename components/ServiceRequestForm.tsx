@@ -680,50 +680,60 @@ export default function ServiceRequestForm() {
           <h2 className={`text-2xl font-bold mb-12 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             Frequently Asked Service Questions
           </h2>
-          <div className="max-w-3xl mx-auto divide-y divide-gray-200 dark:divide-gray-700">
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <div className="max-w-3xl mx-auto divide-y divide-gray-200 dark:divide-gray-700" itemScope itemType="https://schema.org/FAQPage">
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 What should I do if my equipment needs immediate attention?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                For emergency service, please call our service hotline directly at (800) 246-9689. Our service coordinators will work to get a technician to you as quickly as possible.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  For emergency service, please call our service hotline directly at (800) 246-9689. Our service coordinators will work to get a technician to you as quickly as possible.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 How long does a typical service appointment take?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                Service appointment duration varies depending on the type of service needed. Routine maintenance typically takes 1-2 hours, while repairs can take 2-4 hours depending on complexity. Our technician will provide a time estimate when your appointment is confirmed.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  Service appointment duration varies depending on the type of service needed. Routine maintenance typically takes 1-2 hours, while repairs can take 2-4 hours depending on complexity. Our technician will provide a time estimate when your appointment is confirmed.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 Is there a service warranty on repairs?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                Yes, all our repair work comes with a 90-day warranty on labor and parts replaced. If you experience the same issue within 90 days of service, we&apos;ll return to resolve it at no additional charge.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  Yes, all our repair work comes with a 90-day warranty on labor and parts replaced. If you experience the same issue within 90 days of service, we&apos;ll return to resolve it at no additional charge.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 Do you offer maintenance service plans?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                Yes, we offer preventative maintenance service plans to keep your equipment running at peak performance. These plans include scheduled maintenance visits, priority service, and discounts on parts and repairs. Contact our service department for details.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  Yes, we offer preventative maintenance service plans to keep your equipment running at peak performance. These plans include scheduled maintenance visits, priority service, and discounts on parts and repairs. Contact our service department for details.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 What information should I have ready when the technician arrives?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                Please have your equipment&apos;s model and serial number available, as well as a description of any issues you&apos;re experiencing. If the equipment is under warranty, having proof of purchase or warranty information is also helpful.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  Please have your equipment&apos;s model and serial number available, as well as a description of any issues you&apos;re experiencing. If the equipment is under warranty, having proof of purchase or warranty information is also helpful.
+                </p>
+              </div>
             </div>
           </div>
         </div>

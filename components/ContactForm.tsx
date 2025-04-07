@@ -429,50 +429,60 @@ export default function ContactForm() {
           <h2 className={`text-2xl font-bold mb-12 text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             Frequently Asked Questions
           </h2>
-          <div className="max-w-3xl mx-auto divide-y divide-gray-200 dark:divide-gray-700">
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <div className="max-w-3xl mx-auto divide-y divide-gray-200 dark:divide-gray-700" itemScope itemType="https://schema.org/FAQPage">
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 What areas do you service?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                We provide equipment and services throughout North America, with main service areas in the United States and Canada. For international inquiries, please contact us directly.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  We provide equipment and services throughout North America, with main service areas in the United States and Canada. For international inquiries, please contact us directly.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 Do you offer installation services?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                Yes, we offer professional installation services for all of our equipment. Our technicians are factory-trained and certified to ensure your equipment is installed correctly and operates at peak efficiency.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  Yes, we offer professional installation services for all of our equipment. Our technicians are factory-trained and certified to ensure your equipment is installed correctly and operates at peak efficiency.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 What warranty do you offer?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                We stand behind our products with comprehensive warranty options. Standard warranties range from 1-5 years depending on the product line, with extended warranty options available. Please contact us for specific warranty information for the product you&apos;re interested in.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  We stand behind our products with comprehensive warranty options. Standard warranties range from 1-5 years depending on the product line, with extended warranty options available. Please contact us for specific warranty information for the product you&apos;re interested in.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 Do you offer maintenance services?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                Yes, we provide regular maintenance services to keep your equipment running efficiently. We offer maintenance contracts as well as on-demand service calls. Regular maintenance is key to maximizing the lifespan of your equipment and preventing costly breakdowns.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  Yes, we provide regular maintenance services to keep your equipment running efficiently. We offer maintenance contracts as well as on-demand service calls. Regular maintenance is key to maximizing the lifespan of your equipment and preventing costly breakdowns.
+                </p>
+              </div>
             </div>
             
-            <div className="py-6">
-              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <div className="py-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`} itemProp="name">
                 How quickly can I get replacement parts?
               </h3>
-              <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                We maintain a large inventory of replacement parts and can ship most items within 24-48 hours. For emergency situations, we offer expedited shipping options. Contact our parts department for specific availability and delivery times.
-              </p>
+              <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} itemProp="text">
+                  We maintain a large inventory of replacement parts and can ship most items within 24-48 hours. For emergency situations, we offer expedited shipping options. Contact our parts department for specific availability and delivery times.
+                </p>
+              </div>
             </div>
           </div>
         </div>
