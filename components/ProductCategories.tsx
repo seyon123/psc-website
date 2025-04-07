@@ -2,9 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { getProductLines } from "@/lib/api";
-import { ProductLine } from "@/types/products";
 import Image from "next/image";
+import { ProductLine } from "@/types/products";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -21,7 +20,11 @@ const ITEMS_PER_PAGE_MEDIUM = 2; // 2 items per page for medium screens
 const ITEMS_PER_PAGE_LARGE = 3; // 3 items per page for larger screens
 const ITEMS_PER_PAGE_XL = 4; // 4 item per page for extra-large screens
 
-export default function ProductCategories() {
+type ProductCategoriesProps = {
+    productLines?: ProductLine[];  // Make this prop optional with a default value in the component
+};
+
+export default function ProductCategories({ productLines: propProductLines }: ProductCategoriesProps) {
     const [productLines, setProductLines] = useState<ProductLine[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_SMALL);
@@ -37,20 +40,27 @@ export default function ProductCategories() {
     }, []);
 
     useEffect(() => {
-        // Fetch product lines when the component is mounted
-        const fetchProductLines = async () => {
-            setIsLoading(true);
-            try {
-                const data = await getProductLines();
-                setProductLines(data);
-            } catch (error) {
-                console.error("Error fetching product lines:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        // If product lines are provided as props, use them directly
+        if (propProductLines && propProductLines.length > 0) {
+            setProductLines(propProductLines);
+            setIsLoading(false);
+        } else {
+            // Otherwise fetch product lines when the component is mounted
+            const fetchProductLines = async () => {
+                setIsLoading(true);
+                try {
+                    const { getProductLines } = await import("@/lib/api");
+                    const data = await getProductLines();
+                    setProductLines(data);
+                } catch (error) {
+                    console.error("Error fetching product lines:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
 
-        fetchProductLines();
+            fetchProductLines();
+        }
 
         // Set the appropriate number of items per page based on screen size
         const updateItemsPerPage = () => {
@@ -75,7 +85,7 @@ export default function ProductCategories() {
         return () => {
             window.removeEventListener('resize', updateItemsPerPage);
         };
-    }, []);
+    }, [propProductLines]);
 
     const totalPages = Math.ceil(productLines.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -183,7 +193,7 @@ export default function ProductCategories() {
                             {/* Left Arrow */}
                             <button
                                 onClick={handlePrevPage}
-                                disabled={currentPage === 1}
+                                disabled={currentPage === 1 && totalPages === 1}
                                 className={`${isDarkMode
                                         ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
                                         : 'bg-white text-blue-600 hover:bg-gray-100'
@@ -248,7 +258,7 @@ export default function ProductCategories() {
                             {/* Right Arrow */}
                             <button
                                 onClick={handleNextPage}
-                                disabled={currentPage === totalPages}
+                                disabled={currentPage === totalPages && totalPages === 1}
                                 className={`${isDarkMode
                                         ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
                                         : 'bg-white text-blue-600 hover:bg-gray-100'
@@ -259,14 +269,29 @@ export default function ProductCategories() {
                             </button>
                         </div>
 
-                        {/* Dot Indicators */}
-                        <div className="flex justify-center items-center mt-8 space-x-1">
-                            {renderPaginationDots()}
-                        </div>
+                        {/* Dot Indicators - only show if more than one page */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center items-center mt-8 space-x-1">
+                                {renderPaginationDots()}
+                            </div>
+                        )}
 
-                        {/* Page Counter */}
-                        <div className={`text-center mt-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
-                            Page {currentPage} of {totalPages}
+                        {/* Page Counter - only show if more than one page */}
+                        {totalPages > 1 && (
+                            <div className={`text-center mt-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
+                                Page {currentPage} of {totalPages}
+                            </div>
+                        )}
+
+                        {/* View All Products Button */}
+                        <div className="text-center mt-12">
+                            <Link href="/products" className={`inline-block px-8 py-3 rounded-lg ${isDarkMode
+                                ? 'bg-blue-700 hover:bg-blue-600'
+                                : 'bg-blue-600 hover:bg-blue-700'
+                                } text-white font-medium transition-all shadow-lg transform hover:-translate-y-1`}
+                            >
+                                View All Products
+                            </Link>
                         </div>
                     </>
                 )}
