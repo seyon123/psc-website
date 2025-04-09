@@ -9,22 +9,12 @@ import {
   XCircleIcon,
   Cog8ToothIcon
 } from '@heroicons/react/24/outline';
+import { ModelRow, ModelTable } from '@/types/models';
 import ModelComparison from './ModelComparison';
 
-interface ModelRow {
-  [key: string]: string | number | boolean | undefined;
-  model?: string | number;
-  image?: string; // Kept for reference, but won't be displayed in the table
-}
-
-interface ModelTableData {
-  title: string;
-  columns: string[];
-  rows: ModelRow[];
-}
 
 interface ProductModelsTableProps {
-  modelTables: ModelTableData[];
+  modelTables: ModelTable[];
   productSlug: string;
   productLineSlug: string;
   onModelSelect?: (model: ModelRow) => void; // Callback to update main product image and specs
@@ -42,13 +32,13 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
   // Comparison state
   const [selectedModels, setSelectedModels] = useState<ModelRow[]>([]);
   const [showComparison, setShowComparison] = useState(false);
-  const [activeTable, setActiveTable] = useState<ModelTableData | null>(null);
+  const [activeTable, setActiveTable] = useState<ModelTable | null>(null);
   
   // Max number of models that can be compared
   const MAX_COMPARE_MODELS = 4;
 
   // Toggle model selection for comparison
-  const toggleModelSelection = (e: React.MouseEvent, model: ModelRow, tableData: ModelTableData) => {
+  const toggleModelSelection = (e: React.MouseEvent, model: ModelRow, tableData: ModelTable) => {
     e.stopPropagation(); // Prevent row click
     setActiveTable(tableData);
     
