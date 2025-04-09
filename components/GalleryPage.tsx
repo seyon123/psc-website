@@ -1,12 +1,17 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
+import { 
+    MagnifyingGlassPlusIcon, 
+    ChevronLeftIcon, 
+    ChevronRightIcon 
+} from "@heroicons/react/24/outline";
 
 // Placeholder image URL
 const placeholderImage = "/placeholder-image.jpg";
 
 // Helper function to get the full image URL
-// Now includes check to prevent adding the base URL twice
 const getImageUrl = (url?: string) => {
     if (!url) return placeholderImage;
     
@@ -48,6 +53,15 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [allImages, setAllImages] = useState<string[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
+    const { resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState<boolean>(false);
+    
+    // Determine if we're in dark mode after mounting
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+    
+    const isDarkMode = mounted && resolvedTheme === 'dark';
 
     // Prepare images array when the component mounts or when item/modelImages changes
     useEffect(() => {
@@ -108,14 +122,14 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
     }, [zoomed]);
 
     if (!item && !modelImages) {
-        return <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-            <p className="text-gray-500">Loading...</p>
+        return <div className={`flex items-center justify-center h-64 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg`}>
+            <p className={isDarkMode ? 'text-gray-300' : 'text-gray-500'}>Loading...</p>
         </div>;
     }
 
     if (loading) {
-        return <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-            <p className="text-gray-500">Loading images...</p>
+        return <div className={`flex items-center justify-center h-64 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg`}>
+            <p className={isDarkMode ? 'text-gray-300' : 'text-gray-500'}>Loading images...</p>
         </div>;
     }
 
@@ -154,7 +168,7 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
                 {/* Main Image with zoom functionality */}
                 <div
                     ref={containerRef}
-                    className={`relative flex items-center justify-center w-full lg:flex-1 aspect-square shadow-lg rounded-lg bg-white overflow-hidden ${zoomed ? 'cursor-none' : 'cursor-zoom-in'
+                    className={`relative flex items-center justify-center w-full lg:flex-1 aspect-square shadow-lg rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} overflow-hidden ${zoomed ? 'cursor-none' : 'cursor-zoom-in'
                         }`}
                     style={{ height: '400px' }}
                     onClick={handleImageClick}
@@ -172,13 +186,10 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
                         />
                     </div>
 
-                    {/* Zoom instruction icon */}
+                    {/* Zoom instruction icon - Using Heroicons */}
                     {!zoomed && (
-                        <div className="absolute bottom-2 right-2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full z-10">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M5 8a1 1 0 011-1h1V6a1 1 0 012 0v1h1a1 1 0 110 2H9v1a1 1 0 11-2 0V9H6a1 1 0 01-1-1z" />
-                                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                            </svg>
+                        <div className={`absolute bottom-2 right-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-800'} bg-opacity-50 text-white p-2 rounded-full z-10`}>
+                            <MagnifyingGlassPlusIcon className="h-5 w-5" />
                         </div>
                     )}
 
@@ -199,7 +210,7 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
             {allImages.length > 1 && (
                 <div className="flex justify-center mt-4 lg:hidden">
                     <button
-                        className="bg-gray-200 p-2 rounded-l-lg"
+                        className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'} cursor-pointer p-2 rounded-l-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center`}
                         onClick={(e) => {
                             e.stopPropagation(); // Prevent triggering zoom
                             const currentIndex = allImages.findIndex(img => img === selectedImage);
@@ -207,15 +218,13 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
                             setSelectedImage(allImages[prevIndex]);
                         }}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                        <ChevronLeftIcon className="h-5 w-5" />
                     </button>
-                    <div className="px-4 py-2 bg-gray-200">
+                    <div className={`${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-800'} px-4 py-2 font-medium flex items-center justify-center min-w-12 shadow-sm border-x ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
                         {allImages.findIndex(img => img === selectedImage) + 1} / {allImages.length}
                     </div>
                     <button
-                        className="bg-gray-200 p-2 rounded-r-lg"
+                        className={`${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'} cursor-pointer p-2 rounded-r-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center`}
                         onClick={(e) => {
                             e.stopPropagation(); // Prevent triggering zoom
                             const currentIndex = allImages.findIndex(img => img === selectedImage);
@@ -223,9 +232,7 @@ export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
                             setSelectedImage(allImages[nextIndex]);
                         }}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                        </svg>
+                        <ChevronRightIcon className="h-5 w-5" />
                     </button>
                 </div>
             )}
