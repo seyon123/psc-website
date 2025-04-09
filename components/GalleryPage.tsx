@@ -6,7 +6,19 @@ import Image from "next/image";
 const placeholderImage = "/placeholder-image.jpg";
 
 // Helper function to get the full image URL
-const getImageUrl = (url?: string) => url ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${url}` : placeholderImage;
+// Now includes check to prevent adding the base URL twice
+const getImageUrl = (url?: string) => {
+    if (!url) return placeholderImage;
+    
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "";
+    
+    // Check if the URL already includes the base URL to prevent duplication
+    if (url.startsWith("http") || url.startsWith(baseUrl)) {
+        return url;
+    }
+    
+    return `${baseUrl}${url}`;
+};
 
 // Define the common type for both products and parts
 type Item = {
@@ -18,24 +30,54 @@ type Item = {
     }[];
 };
 
-type GalleryPageProps = {
-    item: Item | null; // Allow item to be nullable in case it is not loaded yet
+// Extended type to support model images
+type ModelImage = {
+    model?: string | number;
+    image?: string | string[];
 };
 
-export default function GalleryPage({ item }: GalleryPageProps) {
+type GalleryPageProps = {
+    item: Item | null; // Allow item to be nullable in case it is not loaded yet
+    modelImages?: ModelImage | null; // Optional model-specific images
+};
+
+export default function GalleryPage({ item, modelImages }: GalleryPageProps) {
     const [selectedImage, setSelectedImage] = useState<string>(placeholderImage);
     const [loading, setLoading] = useState<boolean>(true);
     const [zoomed, setZoomed] = useState<boolean>(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [allImages, setAllImages] = useState<string[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Only update state if `item` and `item.image` are valid
+    // Prepare images array when the component mounts or when item/modelImages changes
     useEffect(() => {
-        if (item && item.image && item.image.length > 0) {
-            setSelectedImage(getImageUrl(item.image[0].url));
+        let imagesArray: string[] = [];
+        
+        // Check if modelImages is provided and has images
+        if (modelImages) {
+            // Handle single image string
+            if (typeof modelImages.image === 'string') {
+                imagesArray.push(getImageUrl(modelImages.image));
+            } 
+            // Handle array of image strings
+            else if (Array.isArray(modelImages.image)) {
+                imagesArray = modelImages.image.map(img => getImageUrl(img));
+            }
         }
+        // Fallback to item images if no model images or empty model images array
+        else if (item && item.image && item.image.length > 0) {
+            imagesArray = item.image.map(img => getImageUrl(img.url));
+        }
+
+        // If we still have no images, use placeholder
+        if (imagesArray.length === 0) {
+            imagesArray.push(placeholderImage);
+        }
+
+        setAllImages(imagesArray);
+        setSelectedImage(imagesArray[0]);
         setLoading(false);
-    }, [item]); // Re-run the effect when `item` changes
+    }, [item, modelImages]);
 
     const handleImageClick = () => {
         setZoomed(!zoomed);
@@ -65,7 +107,7 @@ export default function GalleryPage({ item }: GalleryPageProps) {
         }
     }, [zoomed]);
 
-    if (!item) {
+    if (!item && !modelImages) {
         return <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
             <p className="text-gray-500">Loading...</p>
         </div>;
@@ -86,19 +128,19 @@ export default function GalleryPage({ item }: GalleryPageProps) {
         <div className="container mx-auto">
             <div className="flex flex-col lg:flex-row items-start lg:items-start gap-6">
                 {/* Thumbnail Gallery (only show if images exist and there's more than one) */}
-                {item.image && item.image.length > 1 && (
+                {allImages.length > 1 && (
                     <div className="flex lg:flex-col w-full lg:w-24 gap-4 p-2 overflow-x-auto lg:overflow-y-auto">
-                        {item.image.map((img, index) => (
+                        {allImages.map((img, index) => (
                             <div
                                 key={index}
-                                className={`relative rounded-lg w-20 h-20 flex-shrink-0 cursor-pointer shadow-md hover:scale-105 transition-all ${selectedImage === getImageUrl(img.url) ? 'ring-2 ring-blue-500' : ''
+                                className={`relative rounded-lg w-20 h-20 flex-shrink-0 cursor-pointer shadow-md hover:scale-105 transition-all ${selectedImage === img ? 'ring-2 ring-blue-500' : ''
                                     }`}
-                                onClick={() => setSelectedImage(getImageUrl(img.url))}
+                                onClick={() => setSelectedImage(img)}
                             >
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <Image
-                                        src={getImageUrl(img.url)}
-                                        alt={`${item.name} - view ${index + 1}`}
+                                        src={img}
+                                        alt={`${item?.name || 'Product'} - view ${index + 1}`}
                                         width={80}
                                         height={80}
                                         className="object-contain max-h-full max-w-full rounded-lg"
@@ -122,7 +164,7 @@ export default function GalleryPage({ item }: GalleryPageProps) {
                     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                         <Image
                             src={selectedImage}
-                            alt={item.name || "Product image"}
+                            alt={item?.name || "Product image"}
                             fill={true}
                             className="object-contain transition-transform duration-100"
                             style={{ transform: transformValue }}
@@ -154,15 +196,15 @@ export default function GalleryPage({ item }: GalleryPageProps) {
             </div>
 
             {/* Image navigation buttons for mobile */}
-            {item.image && item.image.length > 1 && (
+            {allImages.length > 1 && (
                 <div className="flex justify-center mt-4 lg:hidden">
                     <button
                         className="bg-gray-200 p-2 rounded-l-lg"
                         onClick={(e) => {
                             e.stopPropagation(); // Prevent triggering zoom
-                            const currentIndex = item.image!.findIndex(img => getImageUrl(img.url) === selectedImage);
-                            const prevIndex = (currentIndex - 1 + item.image!.length) % item.image!.length;
-                            setSelectedImage(getImageUrl(item.image![prevIndex].url));
+                            const currentIndex = allImages.findIndex(img => img === selectedImage);
+                            const prevIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+                            setSelectedImage(allImages[prevIndex]);
                         }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -170,15 +212,15 @@ export default function GalleryPage({ item }: GalleryPageProps) {
                         </svg>
                     </button>
                     <div className="px-4 py-2 bg-gray-200">
-                        {item.image.findIndex(img => getImageUrl(img.url) === selectedImage) + 1} / {item.image.length}
+                        {allImages.findIndex(img => img === selectedImage) + 1} / {allImages.length}
                     </div>
                     <button
                         className="bg-gray-200 p-2 rounded-r-lg"
                         onClick={(e) => {
                             e.stopPropagation(); // Prevent triggering zoom
-                            const currentIndex = item.image!.findIndex(img => getImageUrl(img.url) === selectedImage);
-                            const nextIndex = (currentIndex + 1) % item.image!.length;
-                            setSelectedImage(getImageUrl(item.image![nextIndex].url));
+                            const currentIndex = allImages.findIndex(img => img === selectedImage);
+                            const nextIndex = (currentIndex + 1) % allImages.length;
+                            setSelectedImage(allImages[nextIndex]);
                         }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

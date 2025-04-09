@@ -37,6 +37,11 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
   // Max number of models that can be compared
   const MAX_COMPARE_MODELS = 4;
 
+  // Function to check if column is an image column (to hide from display)
+  const isImageColumn = (column: string) => {
+    return column.toLowerCase() === 'image' || column.toLowerCase() === 'images';
+  };
+
   // Toggle model selection for comparison
   const toggleModelSelection = (e: React.MouseEvent, model: ModelRow, tableData: ModelTable) => {
     e.stopPropagation(); // Prevent row click
@@ -82,7 +87,6 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
       onModelSelect(model);
     } else {
       // Otherwise update URL directly with the browser history API
-      // This provides the smoothest experience with no refresh or scroll jump
       const modelStr = model.model?.toString().toLowerCase();
       if (modelStr && typeof window !== 'undefined') {
         // Create URL with model parameter
@@ -155,16 +159,21 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
               <thead>
                 <tr className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
                   <th className="w-12 px-2 py-3"></th>
-                  {table.columns.map((column, colIndex) => (
-                    <th 
-                      key={colIndex}
-                      className={`px-4 py-3 text-sm font-medium ${
-                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                      } uppercase tracking-wider whitespace-nowrap text-center`}
-                    >
-                      {column}
-                    </th>
-                  ))}
+                  {table.columns.map((column, colIndex) => {
+                    // Skip rendering the 'image' column in the header
+                    if (isImageColumn(column)) return null;
+                    
+                    return (
+                      <th 
+                        key={colIndex}
+                        className={`px-4 py-3 text-sm font-medium ${
+                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        } uppercase tracking-wider whitespace-nowrap text-center`}
+                      >
+                        {column}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -215,6 +224,9 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                     
                     {/* Model data */}
                     {table.columns.map((column, cellIndex) => {
+                      // Skip rendering the 'image' column in the cells
+                      if (isImageColumn(column)) return null;
+                      
                       const columnKey = column.toLowerCase().replace(/\s/g, '_').replace(/[()."]/g, '');
                       const cellValue = row[columnKey];
                       return (
@@ -234,7 +246,9 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
                               : <span className={`inline-flex items-center justify-center p-0.5 rounded-md ${isDarkMode ? 'bg-gray-800/60 text-gray-500' : 'bg-gray-200 text-gray-400'}`}>
                                   <XCircleIcon className="w-4 h-4" />
                                 </span>)
-                            : cellValue ?? '-'}
+                            : Array.isArray(cellValue) 
+                              ? cellValue.join(', ') // Handle arrays by joining them
+                              : cellValue ?? '-'}
                         </td>
                       );
                     })}
@@ -250,7 +264,7 @@ const ProductModelsTable: React.FC<ProductModelsTableProps> = ({
       {showComparison && activeTable && (
         <ModelComparison 
           models={selectedModels} 
-          columns={activeTable.columns}
+          columns={activeTable.columns.filter(column => !isImageColumn(column))}
           title={activeTable.title}
           onClose={closeComparison}
         />

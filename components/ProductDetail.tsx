@@ -7,7 +7,6 @@ import rehypeRaw from "rehype-raw";
 import GalleryPage from "@/components/GalleryPage";
 import ProductModelsTable from "@/components/ProductModelsTable";
 import Link from "next/link";
-import Image from "next/image";
 import { 
     ArrowLeftIcon,
     InformationCircleIcon,
@@ -27,7 +26,19 @@ type ProductDetailProps = {
 };
 
 // Helper function to get the full image URL
-const getImageUrl = (url?: string) => url ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${url}` : "/placeholder-image.jpg";
+const getImageUrl = (url?: string) => {
+    if (!url) return "/placeholder-image.jpg";
+    
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL || "";
+    
+    // Check if the URL already includes the base URL to prevent duplication
+    if (url.startsWith("http") || url.startsWith(baseUrl)) {
+        return url;
+    }
+    
+    return `${baseUrl}${url}`;
+};
+
 
 export default function ProductDetail({ product, productLineSlug, productSlug, initialModelParam }: ProductDetailProps) {
     // Router for navigation
@@ -43,6 +54,8 @@ export default function ProductDetail({ product, productLineSlug, productSlug, i
     const [defaultImage, setDefaultImage] = useState<string | null>(null);
     // State for the currently selected model
     const [selectedModel, setSelectedModel] = useState<ModelRow | null>(null);
+    // State for model images (array support)
+    const [selectedModelImages, setSelectedModelImages] = useState<string[]>([]);
 
     // Set mounted to true after component mounts
     useEffect(() => {
@@ -81,8 +94,20 @@ export default function ProductDetail({ product, productLineSlug, productSlug, i
                 
                 // Update the image if the model has one
                 const modelWithImage = foundModel as ModelRow;
-                if (modelWithImage.image && typeof modelWithImage.image === 'string') {
-                    setCurrentImage(getImageUrl(modelWithImage.image));
+                if (modelWithImage.image) {
+                    if (typeof modelWithImage.image === 'string') {
+                        // Single image
+                        setCurrentImage(getImageUrl(modelWithImage.image));
+                        setSelectedModelImages([getImageUrl(modelWithImage.image)]);
+                    } else if (Array.isArray(modelWithImage.image)) {
+                        // Multiple images
+                        setSelectedModelImages(
+                            modelWithImage.image.map((img: string) => getImageUrl(img))
+                        );
+                        if (modelWithImage.image.length > 0) {
+                            setCurrentImage(getImageUrl(modelWithImage.image[0]));
+                        }
+                    }
                 }
             }
         }
@@ -108,15 +133,28 @@ export default function ProductDetail({ product, productLineSlug, productSlug, i
     const handleModelSelect = (model: ModelRow) => {
         // Set the selected model for displaying specs
         setSelectedModel(model);
-
+    
         // Update the displayed image if available, otherwise use default product image
-        if (model.image && typeof model.image === 'string') {
-            setCurrentImage(getImageUrl(model.image));
+        if (model.image) {
+            if (typeof model.image === 'string') {
+                // Single image - ensure URL is properly formatted
+                const formattedUrl = getImageUrl(model.image);
+                setCurrentImage(formattedUrl);
+                setSelectedModelImages([formattedUrl]);
+            } else if (Array.isArray(model.image)) {
+                // Multiple images - format each URL
+                const formattedUrls = model.image.map((img: string) => getImageUrl(img));
+                setSelectedModelImages(formattedUrls);
+                if (formattedUrls.length > 0) {
+                    setCurrentImage(formattedUrls[0]);
+                }
+            }
         } else if (defaultImage) {
             // Fall back to default product image if model has no image
             setCurrentImage(defaultImage);
+            setSelectedModelImages([]);
         }
-
+    
         // Update the URL with the selected model
         const modelStr = model.model?.toString().toLowerCase();
         if (modelStr) {
@@ -134,6 +172,7 @@ export default function ProductDetail({ product, productLineSlug, productSlug, i
     const clearModelSelection = () => {
         setSelectedModel(null);
         setCurrentImage(defaultImage);
+        setSelectedModelImages([]);
 
         // Remove model from URL
         const newParams = new URLSearchParams(searchParams.toString());
@@ -208,21 +247,21 @@ export default function ProductDetail({ product, productLineSlug, productSlug, i
                 {/* Flexbox container to hold gallery and description */}
                 <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
                     <div className="flex flex-col lg:flex-row items-start gap-6 p-6">
-                        {/* Product Image Section (customized to handle model images) */}
+                        {/* Product Image Section (using GalleryPage for both cases) */}
                         <div className="flex-shrink-0 w-full lg:w-1/2 flex items-center justify-center self-center">
                             <div className="w-full">
                                 {selectedModel ? (
-                                    // If a specific model is selected, show its image
-                                    <div className="relative h-96 w-full rounded-lg overflow-hidden">
-                                        <Image
-                                            src={currentImage || defaultImage || "/placeholder-image.jpg"}
-                                            alt={`${product.name} - ${selectedModel.model?.toString() || 'Selected model'}`}
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
+                                    // If a specific model is selected, pass model data to GalleryPage
+                                    <GalleryPage 
+                                        item={product} 
+                                        modelImages={{
+                                            model: selectedModel.model,
+                                            image: selectedModelImages.length > 0 ? selectedModelImages : 
+                                                   (currentImage ? [currentImage] : undefined)
+                                        }}
+                                    />
                                 ) : (
-                                    // If no model is selected, use the GalleryPage for multiple images
+                                    // If no model is selected, use regular GalleryPage
                                     <GalleryPage item={product} />
                                 )}
                             </div>

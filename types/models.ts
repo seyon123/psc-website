@@ -1,10 +1,10 @@
-// types/models.ts
 import { Product } from "./products";
 
 export type ModelRow = {
   model?: string | number;
-  image?: string;
-  [key: string]: string | number | boolean | undefined;
+  // Updated to support both single string and array of strings for multiple images
+  image?: string | string[];
+  [key: string]: string | number | boolean | string[] | undefined;
 };
 
 export type ModelTable = {
