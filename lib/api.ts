@@ -69,7 +69,7 @@ export async function getProductBySlug(slug: string) {
 // Parts and Accessories API Functions
 export async function getPartCategories() {
     try {
-        const response = await fetch(API_URL + `/part-categories?populate=image`);
+        const response = await fetch(API_URL + `/part-categories?populate[image][populate]=*&populate[parts][populate]=*`);
         if (!response.ok) {
             throw new Error(`Failed to fetch part categories ${response.statusText}`);
         }

@@ -9,10 +9,10 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pscclean.com';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all product lines and their products
   const productLines = await getProductLines();
-  
+
   // Get all part categories and their parts
   const partCategories = await getPartCategories();
-  
+
   // Base static routes
   const staticRoutes = [
     {
@@ -34,11 +34,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-        url: `${baseUrl}/service`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly' as const,
-        priority: 0.8,
-      },
+      url: `${baseUrl}/service`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
     {
       url: `${baseUrl}/products`,
       lastModified: new Date(),
